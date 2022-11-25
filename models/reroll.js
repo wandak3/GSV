@@ -20,4 +20,4 @@ const Reroll = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Reroll', Reroll, 'RerollDemo');
+module.exports = mongoose.model('Reroll', Reroll, 'Reroll');
