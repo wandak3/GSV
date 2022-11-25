@@ -35,4 +35,4 @@ const Giveaway = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Giveaway', Giveaway, 'GiveawayDemo');
+module.exports = mongoose.model('Giveaway', Giveaway, 'Giveaway');
