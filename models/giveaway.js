@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const db = mongoose.connection.useDb("ServerBot")
 const Giveaway = new mongoose.Schema({
     _id: {
         type: mongoose.SchemaTypes.String,
@@ -23,7 +23,10 @@ const Giveaway = new mongoose.Schema({
     thumbnail: {
         type: mongoose.SchemaTypes.String
     },
-    requirement: {
+    attachment: {
+        type: mongoose.SchemaTypes.String
+    },
+    description: {
         type: mongoose.SchemaTypes.String
     },
     join: {
@@ -35,4 +38,4 @@ const Giveaway = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Giveaway', Giveaway, 'Giveaway');
+module.exports = db.model('Giveaway', Giveaway, 'Giveaway');

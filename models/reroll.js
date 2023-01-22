@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const db = mongoose.connection.useDb("ServerBot")
 const Reroll = new mongoose.Schema({
     _id: {
         type: mongoose.SchemaTypes.String,
@@ -20,4 +20,4 @@ const Reroll = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Reroll', Reroll, 'Reroll');
+module.exports = db.model('Reroll', Reroll, 'Reroll');

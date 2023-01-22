@@ -11,8 +11,17 @@ const {
 const autocorrect = require('autocorrect')({
     words: Pokedex
 });
+var moment = require('moment');
 const Giveaway = require("../../models/giveaway.js");
 const Reroll = require("../../models/reroll.js");
+var [_trainer, _master, _booster, _donor, _bigdonor, _kingdonor] = [
+    '936835632695762954',
+    '936833835944009809',
+    '813047480413454359',
+    '773778739515228160',
+    '773780261435211798',
+    '773785405874634802'
+];
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('giveaway')
@@ -30,7 +39,7 @@ module.exports = {
             )
             .addStringOption(option =>
                 option
-                .setName('time') //GA time
+                .setName('time') //Giveaway time
                 .setDescription('Thời gian diễn ra buổi giveaway.')
                 .setRequired(true)
                 .addChoices({
@@ -57,51 +66,47 @@ module.exports = {
                 })
             )
             .addStringOption(option =>
-                option.setName('role') //GA description
+                option.setName('role') //Giveaway description
                 .setDescription('Role để tham gia Giveaway')
                 .setRequired(true)
                 .addChoices({
                     name: 'Pokémon Trainer',
-                    value: '1045345685114982400'
+                    value: _trainer
                 }, {
                     name: 'Pokémon Master',
-                    value: '1045345756426555493'
+                    value: _master
                 }, {
                     name: 'Server Booster',
-                    value: '1044130637583499314'
+                    value: _booster
                 }, {
                     name: 'Donor',
-                    value: '1044569861856182332'
+                    value: _donor
                 }, {
                     name: 'Big Donor',
-                    value: '1044569912473042974'
+                    value: _bigdonor
                 }, {
                     name: 'King Donor',
-                    value: '1044569945478012928'
+                    value: _kingdonor
                 }))
             .addStringOption(option =>
-                option.setName('requirement') //GA description
+                option.setName('requirement') //Giveaway description
                 .setDescription('Yêu cầu để tham gia buổi Giveaway.'))
             .addIntegerOption(option =>
                 option.setName('winner')
                 .setDescription('Số người thắng (mặc định là 1)'))
             .addStringOption(option =>
-                option.setName('description') //GA description
-                .setDescription('Mô tả cho buổi giveaway (tuỳ chọn)'))
+                option.setName('description') //Giveaway custom
+                .setDescription('Mô tả về giveaway'))
             .addStringOption(option =>
                 option
-                .setName('pokemon') //GA pokemon name
+                .setName('pokemon') //Giveaway pokemon name
                 .setDescription('Tên pokemon được dùng để giveaway (thêm chữ shiny nếu là shiny).')
             )
             .addAttachmentOption(option =>
                 option
                 .setName("image")
-                .setDescription("Thêm hình ảnh Giveaway"))
-            .addIntegerOption(option =>
-                option
-                .setName('pkc') //GA pkc number
-                .setDescription('Số lượng pkc được dùng để giveaway.')
-            )),
+                .setDescription("Thêm hình ảnh Giveaway"))),
+    moderator: true,
     async execute(interaction, client) {
         if (interaction.options.getSubcommand() === 'create') {
             const user = interaction.options.getUser('user');
@@ -112,6 +117,12 @@ module.exports = {
             const description = interaction.options.getString('description');
             const image = interaction.options.getAttachment('image');
             var pokemon = interaction.options.getString('pokemon');
+
+            const now = Date.now();
+            const add_time = new Date(Number(time) * 1000 * 60 * 60).getTime();
+            let end_time = new Date(add_time + now);
+            let mom = moment(add_time).format("HH giờ mm");
+
             var title = "";
             var thumbnail = "";
             var sprite = "";
@@ -130,67 +141,63 @@ module.exports = {
                     .setLabel('Tham gia giveaway')
                     .setStyle(ButtonStyle.Success),
                 );
+
+            if (description) {
+                embed.addFields({
+                    name: 'Mô tả giveaway',
+                    value: description
+                });
+            }
+            if (image) {
+                title = `Giveaway`;
+                thumbnail = 'https://user-images.githubusercontent.com/116461839/203118961-64a00956-8a3e-4928-aa6b-66821d16c4e2.png';
+                embed
+                    .setTitle(`Giveaway`)
+                    .setImage(image.url)
+                    .setThumbnail('https://user-images.githubusercontent.com/116461839/203118961-64a00956-8a3e-4928-aa6b-66821d16c4e2.png');
+            }
             if (pokemon) {
                 sprite = autocorrect(pokemon);
                 if (pokemon.toLowerCase().includes("shiny")) {
                     pokemon.replace("shiny", "★");
                     shiny = "shiny";
                 }
-            }
-
-            if (!pokemon && !image && !description) {
-                embed.setDescription(`Một buổi giveaway cần phải có mô tả`);
-                return await interaction.reply({
-                    embeds: [embed]
-                });
-            } else if (!pokemon && !image && !image) {
-                title = `GA ${description}`;
-                thumbnail = 'https://user-images.githubusercontent.com/116461839/201083708-05244c2f-354a-4e9d-8eba-df4528287e7e.gif';
+                title = `Giveaway ${pokemon}`;
+                thumbnail = `https://img.pokemondb.net/sprites/black-white/${shiny}/${sprite}.png`;
                 embed
-                    .setTitle(`GA ${description}`)
-                    .setThumbnail('https://user-images.githubusercontent.com/116461839/201083708-05244c2f-354a-4e9d-8eba-df4528287e7e.gif');
-            } else if (!description) {
-                if (!pokemon) {
-                    title = `Giveaway`;
-                    thumbnail = 'https://user-images.githubusercontent.com/116461839/203118961-64a00956-8a3e-4928-aa6b-66821d16c4e2.png';
-                    embed
-                        .setTitle(`Giveaway`)
-                        .setImage(image.url)
-                        .setThumbnail('https://user-images.githubusercontent.com/116461839/203118961-64a00956-8a3e-4928-aa6b-66821d16c4e2.png');
-                } else if (!image) {
-                    title = `GA ${pokemon}`;
-                    thumbnail = `https://img.pokemondb.net/sprites/black-white/${shiny}/${sprite}.png`;
-                    embed
-                        .setTitle(`GA ${pokemon}`)
-                        .setThumbnail(`https://img.pokemondb.net/sprites/black-white/${shiny}/${sprite}.png`);
-                }
+                    .setTitle(`Giveaway ${pokemon}`)
+                    .setThumbnail(`https://img.pokemondb.net/sprites/black-white/${shiny}/${sprite}.png`);
             }
-
-            const current_time = Date.now();
-            const end_time = new Date(current_time + Number(time) * 1000).getTime();
 
             embed
+                .setDescription(`Thời gian còn lại của giveaway: \`${mom}\` giờ.\nSố người tham gia hiện tại: \`0\``)
                 .addFields({
                     name: 'Giveaway',
-                    value: `Được tổ chức bởi: <@${user.id}>.\nSố người thắng: ${number}.\nThời gian kết thúc: \`${time}\` giờ.`
-                }, {
-                    name: '\u200B',
-                    value: `Requirement: ${requirement}`
-                }, {
-                    name: '\u200B',
-                    value: '**Entries:**\n- <@&773785405874634802>: 3 entries\n- <@&813047480413454359>: 2 entries\n- <@&773780261435211798>: 2 entries\n- <@&773778739515228160>: 1 entries'
+                    value: `Được tổ chức bởi: <@${user.id}>.\nRole yêu cầu: <@&${role}>.\nSố người thắng: ${number}.`
                 })
                 .setTimestamp(end_time)
                 .setFooter({
                     text: user.tag,
                     iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.jpeg`
                 });
+
+            if (requirement) {
+                embed.addFields({
+                    name: 'Requirement',
+                    value: requirement
+                });
+            }
+            
+            embed
+                .addFields({
+                    name: '\u200B',
+                    value: '**Entries:**\n- <@&773785405874634802>: 3 entries\n- <@&813047480413454359>: 2 entries\n- <@&773780261435211798>: 2 entries\n- <@&773778739515228160>: 1 entries'
+                });
             const message = await interaction.reply({
                 embeds: [embed],
                 components: [button],
                 fetchReply: true
             });
-
             await Giveaway.create({
                 _id: interaction.id,
                 channel: interaction.channelId,
@@ -199,7 +206,8 @@ module.exports = {
                 winner: number,
                 title: title,
                 thumbnail: thumbnail,
-                requirement: requirement,
+                attachment: image.url,
+                description: description,
                 time: end_time
             });
 

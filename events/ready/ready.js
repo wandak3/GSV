@@ -10,11 +10,8 @@ module.exports = {
         client.emit("giveawayCreate");
         SQLite.sync();
         BlackList.sync();
-        mongoose.connect(url, {
-            dbName: 'ServerBot',
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        }).then(console.log("Bot connected to database."))
+        await mongoose.connect(url)
+        .then(console.log("Bot connected to Server Bot database."))
         .catch((err) => {
             console.log("Bot not Connected to Database ERROR! ", err);
         });

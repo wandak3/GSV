@@ -27,7 +27,7 @@ module.exports = {
             });
         const sqlite = await SQLite.findOne({ where: { _id: user.id } });
         if(!sqlite) {
-            embed.setDescription(`Xin lỗi, nhưng bot không tìm thấy bạn ở trong dữ liệu. Xin hãy thử lại.`);
+            embed.setDescription(`Bạn đã nhắn được tổng cộng: \`0\` tin nhắn trong Server.`);
         } else {
             const message_number = sqlite.get('message_number');
             embed.setDescription(`Bạn đã nhắn được tổng cộng: \`${message_number}\` tin nhắn trong Server.`);

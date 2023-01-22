@@ -5,7 +5,7 @@ const sequelize = new Sequelize('database', 'user', 'password', {
 	dialect: 'sqlite',
 	logging: false,
 	// SQLite only
-	storage: './models/blackList.sqlite',
+	storage: './models/SQLite/blackList.sqlite',
 });
 
 const SQLite = sequelize.define('blackList', {

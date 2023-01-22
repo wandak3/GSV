@@ -1,11 +1,13 @@
 const SQLite = require("../../models/message.js");
 const BlackList = require("../../models/blackList.js");
+const { CountId, Prefix } = require("../../config/config.json");
 
 module.exports = {
     name: 'messageCreate',
     async execute(message, client, Client) {
         if (message.author.bot) return;
-        if (message.channel.id != "1044060565531795526") return;
+        if (message.content.startsWith(Prefix)) return;
+        if (!CountId.includes(message.channel.id)) return;
         const blackList = await BlackList.findOne({ where: { _id: message.author.id } });
         if(blackList) return;
         try {
@@ -21,6 +23,8 @@ module.exports = {
                         _id: message.author.id
                     }
                 });
+                const user = await SQLite.findOne({ where: { _id: message.author.id } });
+                if(user.get('message_number') > 2000) {}
             } else console.log(err);
         }
     }

@@ -5,7 +5,7 @@ const sequelize = new Sequelize('database', 'user', 'password', {
 	dialect: 'sqlite',
 	logging: false,
 	// SQLite only
-	storage: './models/message.sqlite',
+	storage: './models/SQLite/message.sqlite',
 });
 
 const SQLite = sequelize.define('message', {
