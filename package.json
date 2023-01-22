@@ -10,10 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "mongoose": "6.7.2",
-    "sequelize": "6.27.0",
-    "autocorrect": "1.2.0",
-    "moment-timezone": "^0.5.39",
-    "discord.js": "14.7.1"
+    "discord.js": "14.6.0"
   },
   "nodeVersion": "16.17.0"
 }
