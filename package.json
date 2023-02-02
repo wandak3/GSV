@@ -1,7 +1,7 @@
 {
-  "name": "Wurmpus Bot",
-  "version": "1.0.1",
-  "description": "An automation tool to play Myuu Pokemon game.",
+  "name": "TwilightServerBot",
+  "version": "1.0.0",
+  "description": "A moderator server bot.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

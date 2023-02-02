@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
-const { Token } = require('./config/config.json');
+const { Token } = require('./src/config/config.json');
 
 const client = new Client({
     checkUpdate: false,
@@ -12,8 +12,9 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+client.slash = new Collection();
 ['event', 'command', 'error', 'slash'].forEach(handler => {
-    require(`./handler/${handler}`)(client, Client);
+    require(`./src/handler/${handler}`)(client, Client);
 });
 
 client.login(Token);
