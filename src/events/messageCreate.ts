@@ -1,7 +1,7 @@
 import { ChannelType, Message } from "discord.js";
-import { checkPermissions, sendTimedMessage, getGuildOption } from "../function";
+import { checkPermissions, getGuildOption, sendTimedMessage } from "../function";
 import { BotEvent } from "../types";
-import { Prefix } from "../config/config.json";
+import { Prefix } from "../config/config.json"
 import mongoose from "mongoose";
 
 const event: BotEvent = {
@@ -9,16 +9,15 @@ const event: BotEvent = {
     execute: async (message: Message) => {
         if (!message.member || message.member.user.bot) return;
         if (!message.guild) return;
-        if (!message.content.startsWith(Prefix)) return;
-        if (message.channel.type !== ChannelType.GuildText) return;
-        
-        let prefix = Prefix;
+        let prefix: string = Prefix;
         if (mongoose.connection.readyState === 1) {
             let guildPrefix = await getGuildOption(message.guild, "prefix") 
-                if (guildPrefix) prefix = guildPrefix;
+                if (guildPrefix) prefix = guildPrefix as string;
         }
+        if (!message.content.startsWith(prefix)) return;
+        if (message.channel.type !== ChannelType.GuildText) return;
 
-        let args = message.content.substring(Prefix.length).split(" ")
+        let args = message.content.substring(prefix.length).split(" ")
         let command = message.client.commands.get(args[0])
 
         if (!command) {
@@ -26,17 +25,20 @@ const event: BotEvent = {
             if (commandFromAlias) command = commandFromAlias
             else return;
         }
+
         let cooldown = message.client.cooldowns.get(`${command.name}-${message.member.user.username}`)
         let neededPermissions = checkPermissions(message.member, command.permissions)
         if (neededPermissions !== null)
             return sendTimedMessage(
                 `
-                You don't have enough permissions to use this command. 
-                \n Needed permissions: ${neededPermissions.join(", ")}
-                `,
+            You don't have enough permissions to use this command. 
+            \n Needed permissions: ${neededPermissions.join(", ")}
+            `,
                 message.channel,
                 5000
             )
+
+
         if (command.cooldown && cooldown) {
             if (Date.now() < cooldown) {
                 sendTimedMessage(
@@ -53,6 +55,7 @@ const event: BotEvent = {
         } else if (command.cooldown && !cooldown) {
             message.client.cooldowns.set(`${command.name}-${message.member.user.username}`, Date.now() + command.cooldown * 1000)
         }
+
         command.execute(message, args)
     }
 }

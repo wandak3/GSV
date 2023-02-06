@@ -3,6 +3,6 @@
     "Token" : "MTA2OTYxMjU0NDU4MDM5MTA3Mw.Gg6Ku7.QF_8KpBbTWrb6WtEgHRFU6Zcosx7IwmAc1dLxg",
     "ClientId" : "1069612544580391073",
     "GuildId" : "1039818882069839893",
-    "MongoDataBase": "Twilight",
-    "MongoURL" : "mongodb+srv://nhocsake:quaylen123@account.uu5c73r.mongodb.net/?retryWrites=true&w=majority"
+    "MongoDataBase": "ServerDatabase",
+    "MongoURL" : "mongodb+srv://nhocsake:quaylen123@serverdb.6kofem3.mongodb.net/?retryWrites=true&w=majority"
 }

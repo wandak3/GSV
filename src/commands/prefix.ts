@@ -2,9 +2,10 @@ import { setGuildOption } from "../function";
 import { Command } from "../types";
 
 const command: Command = {
-    name: "changePrefix",
+    name: "prefix",
     permissions: ["Administrator"],
     aliases: [],
+    cooldown: 10,
     execute: (message, args) => {
         let prefix = args[1]
         if (!prefix) return message.channel.send("No prefix provided")
@@ -14,4 +15,4 @@ const command: Command = {
     }
 }
 
-export default command
+export default command;

@@ -9,31 +9,29 @@ module.exports = (client : Client) => {
     const slashCommands : SlashCommandBuilder[] = []
     const commands : Command[] = []
 
-    let slashCommandsDir = join(__dirname,"../slashCommands")
-    let commandsDir = join(__dirname,"../commands")
+    let slashCommandsDir = join(__dirname,"../slashCommands");
+    let commandsDir = join(__dirname,"../commands");
 
     readdirSync(slashCommandsDir).forEach(file => {
         if (!file.endsWith(".ts")) return;
         let command : SlashCommand = require(`${slashCommandsDir}/${file}`).default
         slashCommands.push(command.command)
         client.slashCommands.set(command.command.name, command)
-    })
+    });
 
     readdirSync(commandsDir).forEach(file => {
         if (!file.endsWith(".ts")) return;
         let command : Command = require(`${commandsDir}/${file}`).default
         commands.push(command)
         client.commands.set(command.name, command)
-    })
+    });
 
     const rest = new REST({version: "10"}).setToken(Token);
 
     rest.put(Routes.applicationCommands(ClientId), {
         body: slashCommands.map(command => command.toJSON())
     })
-    .then(() => {
-        console.log('Loaded Slash Command successfully');
-    }).catch(e => {
+    .catch(e => {
         console.log(e)
     })
 }
