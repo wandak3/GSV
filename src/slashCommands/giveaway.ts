@@ -126,10 +126,10 @@ const command : SlashCommand = {
             const giveawayCreate: GuildGiveaway = {
                 id: interaction.id,
                 time: endTime,
+                channel: interaction.channel!,
                 entries: []
             }
             await pushGuildProperties(interaction!.guild as Guild, 'giveawayList', giveawayCreate);
-            client.emit('giveawayCreate', interaction);
             await interaction.reply(
                 {
                     embeds: [giveawayEmbed],

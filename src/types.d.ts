@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, CommandInteraction, Collection, PermissionResolvable, Message, AutocompleteInteraction, Client, DateResolvable } from "discord.js"
+import { SlashCommandBuilder, CommandInteraction, Collection, PermissionResolvable, Message, AutocompleteInteraction, Client, DateResolvable, Channel } from "discord.js"
 import EventEmitter from "events";
 
 export interface SlashCommand {
@@ -28,7 +28,14 @@ interface BonusEntries {
 interface GuildGiveaway {
     id: string,
     time: number,
+    channel: Channel,
     entries: string[]
+}
+
+interface GiveawayWinner {
+    giveaway: string,
+    winner: string,
+    channel: string
 }
 
 interface GuildProperties {
@@ -58,6 +65,7 @@ declare module "discord.js" {
         slashCommands: Collection<string, SlashCommand>,
         commands: Collection<string, Command>,
         cooldowns: Collection<string, number>,
-        database: Array;
+        giveaway: GiveawayWinner[],
+        database: IGuild;
     }
 }
