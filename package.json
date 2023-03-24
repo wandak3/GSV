@@ -7,16 +7,14 @@
     "start": "cls && node build/index.js"
   },
   "keywords": [],
-  "author": "MericcaN41",
+  "author": "Wurmpus",
   "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "^1.1.0",
     "@types/node": "^18.7.14",
-    "chalk": "^4.1.2",
     "discord.js": "14.3.0",
     "dotenv": "^16.0.2",
-    "mongoose": "^6.9.0",
-    "sequelize": "^6.28.0"
+    "mongoose": "^6.9.0"
   },
   "devDependencies": {
     "typescript": "^4.9.5"
