@@ -4,5 +4,5 @@
     "ClientId" : "1069612544580391073",
     "GuildId" : "1039818882069839893",
     "MongoDataBase": "ServerDatabase",
-    "MongoURL" : "mongodb+srv://nhocsake:quaylen123@serverdb.6kofem3.mongodb.net/?retryWrites=true&w=majority"
+    "MongoURL" : "mongodb+srv://twilight:quaylen123@server.51sbsmf.mongodb.net/?retryWrites=true&w=majority"
 }

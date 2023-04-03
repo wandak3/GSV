@@ -28,7 +28,7 @@ interface BonusEntries {
 interface GuildGiveaway {
     id: string,
     time: number,
-    channel: Channel,
+    channel: string,
     entries: string[]
 }
 
@@ -39,7 +39,7 @@ interface GiveawayWinner {
 }
 
 interface GuildProperties {
-    giveawayList: GuildGiveaway[]
+    giveawayList: GuildGiveaway[],
     bonusList: BonusEntries[]
 }
 
@@ -65,7 +65,7 @@ declare module "discord.js" {
         slashCommands: Collection<string, SlashCommand>,
         commands: Collection<string, Command>,
         cooldowns: Collection<string, number>,
-        giveaway: GiveawayWinner[],
-        database: IGuild;
+        database: Collection<string, IGuild>,
+        doneGiveaway: GiveawayWinner[]
     }
 }

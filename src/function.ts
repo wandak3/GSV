@@ -2,6 +2,7 @@ import { Guild, GuildMember, GuildMemberRoleManager, PermissionFlagsBits, Permis
 import { BonusEntries, GuildGiveaway, GuildOption, GuildProperty } from "./types";
 import GuildModel from "./database/guild"
 import mongoose from "mongoose";
+import client from "./index";
 
 export const checkPermissions = (member: GuildMember, permissions: Array<PermissionResolvable>) => {
     let neededPermissions: PermissionResolvable[] = []
@@ -22,7 +23,7 @@ export const sendTimedMessage = (message: string, channel: TextChannel, duration
 }
 
 export const checkGuildDatabase = async (guild: Guild) => {
-    if (mongoose.connection.readyState === 0) throw new Error("Database not connected.")
+    if (mongoose.connection.readyState === 0) throw new Error("Database not connected.");
     let guildb = await GuildModel.findOne({ guildID: guild.id })
     if (!guildb) {
         let newGuild = new GuildModel({
@@ -30,8 +31,18 @@ export const checkGuildDatabase = async (guild: Guild) => {
             options: {},
             joinedAt: Date.now()
         })
-        newGuild.save()
+        newGuild.save();
     }
+}
+
+export const createGuildDatabase = async (guild: Guild) => {
+    if (mongoose.connection.readyState === 0) throw new Error("Database not connected.")
+    let newGuild = new GuildModel({
+        guildID: guild.id,
+        options: {},
+        joinedAt: Date.now()
+    })
+    newGuild.save();
 }
 
 export const getGuildOption: any = async (guild: Guild, option: GuildOption) => {
@@ -52,7 +63,8 @@ export const setGuildOption = async (guild: Guild, option: GuildOption, value: a
 export const getGuildProperties: any = async (guild: Guild, option: GuildProperty) => {
     if (mongoose.connection.readyState === 0) throw new Error("Database not connected.");
     let guildb = await GuildModel.findOne({ guildID: guild.id });
-    return guildb!.properties[option];
+    if (!guildb) return;
+    return guildb.properties[option];
 }
 
 export const setGuildProperties = async (guild: Guild, option: GuildProperty, value: any) => {
@@ -64,11 +76,16 @@ export const setGuildProperties = async (guild: Guild, option: GuildProperty, va
 }
 
 export const pushGuildProperties = async (guild: Guild, option: GuildProperty, value: any) => {
-    if (mongoose.connection.readyState === 0) throw new Error("Database not connected.")
-    let guildb = await GuildModel.findOne({ guildID: guild.id })
+    if (mongoose.connection.readyState === 0) throw new Error("Database not connected.");
+    let guildb = await GuildModel.findOne({ guildID: guild.id });
     if (!guildb) return;
-    guildb.properties[option].push(value)
-    guildb.save()
+    guildb.properties[option].push(value);
+    client.database.map(data => {
+        if (data.guildID == guild.id) {
+            data.properties = guildb!.properties;
+        }
+    });
+    guildb.save();
 }
 
 export const pullGuildProperties = async (guild: Guild, option: GuildProperty, key: any, value: any) => {
@@ -120,6 +137,20 @@ export const updateBonusEntries = async (guild: Guild, bonus: BonusEntries) => {
             } 
         },
     )
+}
+
+export const updateLocalDatabase = async (guild: Guild, option: GuildProperty, push: boolean, value: any) => {
+    const guildb = client.database.map(data => {
+        if (data.guildID == guild.id) {
+            switch (push) {
+                case true:
+                    data.properties[option].push(value);
+                default:
+                    data.properties[option] = value;
+                
+            }
+        }
+    });
 }
 
 export const checkTime = (time: number) => {

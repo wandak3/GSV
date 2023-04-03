@@ -5,7 +5,7 @@ const client = new Client({intents:[
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers
 ]});
-import { Command, SlashCommand } from "./types";
+import { Command, IGuild, SlashCommand } from "./types";
 import { readdirSync } from "fs";
 import { join } from "path";
 import { Token } from "./config/config.json";
@@ -13,6 +13,8 @@ import { Token } from "./config/config.json";
 client.slashCommands = new Collection<string, SlashCommand>();
 client.commands = new Collection<string, Command>();
 client.cooldowns = new Collection<string, number>();
+client.database = new Collection<string, IGuild>();
+client.doneGiveaway = [];
 
 const handlersDir = join(__dirname, "./handlers");
 readdirSync(handlersDir).forEach(handler => {

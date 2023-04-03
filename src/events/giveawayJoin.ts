@@ -10,8 +10,9 @@ const event : BotEvent = {
         if (interaction.customId.includes('joinGiveaway')) {
             let giveaways = await getGuildProperties(interaction.guild, 'giveawayList');
             let bonusList = await getGuildProperties(interaction.guild, 'bonusList');
-            let giveaway = getGiveaway(giveaways, interaction.customId)
-            let found_entry = giveaway!.entries.find(entry => {
+            let giveaway = getGiveaway(giveaways, interaction.customId);
+            if (!giveaway) return;
+            let found_entry = giveaway.entries.find(entry => {
                 return entry === interaction.user.id
             });
             let bonus = getBonusEntries(bonusList, interaction.member!.roles as GuildMemberRoleManager, interaction.user);
