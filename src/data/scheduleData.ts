@@ -975,7 +975,7 @@ export const scheduleData = [
   {
     comment: "2.8.1 Kaedehara Kazuha",
     gachaType: 301,
-    scheduleId: 70,
+    scheduleId: 700,
     prefabPath: "GachaShowPanel_A086",
     titlePath: "UI_GACHA_SHOW_PANEL_A045_TITLE",
     costItemId: 223,
@@ -2868,7 +2868,7 @@ export const scheduleData = [
   {
     comment: "1.6.2",
     gachaType: 302,
-    scheduleId: 29,
+    scheduleId: 2,
     prefabPath: "GachaShowPanel_A047",
     titlePath: "UI_GACHA_SHOW_PANEL_A020_TITLE",
     costItemId: 223,
