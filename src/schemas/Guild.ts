@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IGuild } from "../types";
+
 const GuildSchema = new Schema<IGuild>({
     guildID: {required:true, type: String},
     options: {
@@ -7,6 +8,6 @@ const GuildSchema = new Schema<IGuild>({
     }
 })
 
-const GuildModel = model("Guild", GuildSchema)
+const GuildModel = model("guild", GuildSchema)
 
 export default GuildModel

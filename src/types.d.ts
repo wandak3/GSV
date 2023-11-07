@@ -1,71 +1,63 @@
-import { SlashCommandBuilder, CommandInteraction, Collection, PermissionResolvable, Message, AutocompleteInteraction, Client, DateResolvable, Channel } from "discord.js"
+import {
+  SlashCommandBuilder,
+  CommandInteraction,
+  Collection,
+  PermissionResolvable,
+  Message,
+  AutocompleteInteraction,
+  Client,
+  DateResolvable,
+  Channel,
+} from "discord.js";
 import EventEmitter from "events";
 
-export interface SlashCommand {
-    command: SlashCommandBuilder | any,
-    autocomplete?: (interaction: AutocompleteInteraction) => void,
-    cooldown?: number,
-    execute: (interaction : CommandInteraction) => void,
-}
+type GuildOptions = {
+  prefix: string;
+};
 
-export interface Command {
-    name: string,
-    permissions: Array<PermissionResolvable>,
-    aliases: Array<string>,
-    cooldown?: number,
-    execute: (message: Message, args: Array<string>) => void
-}
+type GuildProperties = {
+  giveawayList: GuildGiveaway[];
+  bonusList: BonusEntries[];
+};
 
-interface GuildOptions {
-    prefix: string
-}
+export type SlashCommand = {
+  command: SlashCommandBuilder | any;
+  cooldown?: number;
+  autocomplete?: (interaction: AutocompleteInteraction) => void;
+  execute: (interaction: CommandInteraction) => void;
+};
 
-interface BonusEntries {
-    roleid: string;
-    bonus: number
-}
+export type Command = {
+  name: string;
+  permissions: Array<PermissionResolvable>;
+  aliases: Array<string>;
+  cooldown?: number;
+  execute: (message: Message, args: Array<string>) => void;
+};
 
-interface GuildGiveaway {
-    id: string,
-    time: number,
-    channel: string,
-    entries: string[]
-}
+export type BotEvent = {
+  name: string;
+  once?: boolean | false;
+  execute: (...args) => void;
+};
 
-interface GiveawayWinner {
-    giveaway: string,
-    winner: string,
-    channel: string
-}
+export type GuildOption = keyof GuildOptions;
 
-interface GuildProperties {
-    giveawayList: GuildGiveaway[],
-    bonusList: BonusEntries[]
-}
-
-export type GuildOption = keyof GuildOptions
-
-export type GuildProperty = keyof GuildProperties
+export type GuildProperty = keyof GuildProperties;
 
 export interface IGuild extends mongoose.Document {
-    guildID: string,
-    options: GuildOptions,
-    properties: GuildProperties,
-    joinedAt: Date
-}
-
-export interface BotEvent {
-    name: string,
-    once?: boolean | false,
-    execute: (...args?) => void
+  guildID: string;
+  options: GuildOptions;
+  properties: GuildProperties;
+  joinedAt: Date;
 }
 
 declare module "discord.js" {
-    export interface Client {
-        slashCommands: Collection<string, SlashCommand>,
-        commands: Collection<string, Command>,
-        cooldowns: Collection<string, number>,
-        database: Collection<string, IGuild>,
-        doneGiveaway: GiveawayWinner[]
-    }
+  export interface Client {
+    slashCommands: Collection<string, SlashCommand>;
+    commands: Collection<string, Command>;
+    cooldowns: Collection<string, number>;
+    database: Collection<string, IGuild>;
+    doneGiveaway: GiveawayWinner[];
+  }
 }

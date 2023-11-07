@@ -3,7 +3,6 @@ import { REST } from "@discordjs/rest"
 import { readdirSync } from "fs";
 import { join } from "path";
 import { Command, SlashCommand } from "../types";
-import { Token, ClientId } from "../config/config.json";
 
 module.exports = (client : Client) => {
     const slashCommands : SlashCommandBuilder[] = []
@@ -26,9 +25,9 @@ module.exports = (client : Client) => {
         client.commands.set(command.name, command)
     });
 
-    const rest = new REST({version: "10"}).setToken(Token);
+    const rest = new REST({version: "10"}).setToken(process.env.TOKEN!);
 
-    rest.put(Routes.applicationCommands(ClientId), {
+    rest.put(Routes.applicationCommands(process.env.CLIENT!), {
         body: slashCommands.map(command => command.toJSON())
     })
     .catch(e => {

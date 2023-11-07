@@ -8,7 +8,9 @@ const client = new Client({intents:[
 import { Command, IGuild, SlashCommand } from "./types";
 import { readdirSync } from "fs";
 import { join } from "path";
-import { Token } from "./config/config.json";
+import { config } from "dotenv";
+
+config()
 
 client.slashCommands = new Collection<string, SlashCommand>();
 client.commands = new Collection<string, Command>();
@@ -21,4 +23,4 @@ readdirSync(handlersDir).forEach(handler => {
     require(`${handlersDir}/${handler}`)(client)
 });
 export default client;
-client.login(Token);
+client.login(process.env.TOKEN);
