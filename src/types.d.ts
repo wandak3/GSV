@@ -15,9 +15,8 @@ type GuildOptions = {
   prefix: string;
 };
 
-type GuildProperties = {
-  giveawayList: GuildGiveaway[];
-  bonusList: BonusEntries[];
+type UserOptions = {
+  link: string;
 };
 
 export type SlashCommand = {
@@ -43,12 +42,19 @@ export type BotEvent = {
 
 export type GuildOption = keyof GuildOptions;
 
+export type UserOption = keyof UserOptions;
+
 export type GuildProperty = keyof GuildProperties;
 
 export interface IGuild extends mongoose.Document {
   guildID: string;
   options: GuildOptions;
-  properties: GuildProperties;
+  joinedAt: Date;
+}
+
+export interface IUser extends mongoose.Document {
+  userID: string;
+  options: UserOptions;
   joinedAt: Date;
 }
 
