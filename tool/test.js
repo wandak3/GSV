@@ -4220,20 +4220,17 @@ const gachaData = [
 ];
 
 const reuslt = gachaData.map((v) => {
-  const value = weaponChoices.filter((t) =>
-    v.rateUpItems5.includes(parseInt(t.value))
-  );
-  if (value.length === 0) return null;
   return {
-    scheduleId: v.scheduleId,
-    name: value.map((t) => t.name).join(", "),
-    value: value.map((t) => t.value).join(","),
-    version: v.prefabPath.split("_")[1],
-    sortId: v.sortId,
-    rateUpItems5: v.rateUpItems5,
-    rateUpItems4: v.rateUpItems4,
-    prefabPath: v.prefabPath,
-    titlePath: v.titlePath,
+    scheduleId,
+    gachaType,
+    bannerType,
+    costItemId,
+    sortId,
+    rateUpItems4,
+    rateUpItems5,
+    prefabPath,
+    previewprefabPath,
+    titlePath,
   };
 });
 
