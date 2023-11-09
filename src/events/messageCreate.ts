@@ -14,27 +14,27 @@ const event: BotEvent = {
     if (!message.guild) return;
     let prefix: string = process.env.PREFIX ?? "!";
     if (mongoose.connection.readyState === 1) {
-      let guildPrefix = await getGuildOption(message.guild, "prefix");
+      const guildPrefix = await getGuildOption(message.guild, "prefix");
       if (guildPrefix) prefix = guildPrefix as string;
     }
     if (!message.content.startsWith(prefix)) return;
     if (message.channel.type !== ChannelType.GuildText) return;
 
-    let args = message.content.substring(prefix.length).split(" ");
+    const args = message.content.substring(prefix.length).split(" ");
     let command = message.client.commands.get(args[0]);
 
     if (!command) {
-      let commandFromAlias = message.client.commands.find((command) =>
+      const commandFromAlias = message.client.commands.find((command) =>
         command.aliases.includes(args[0])
       );
       if (commandFromAlias) command = commandFromAlias;
       else return;
     }
 
-    let cooldown = message.client.cooldowns.get(
+    const cooldown = message.client.cooldowns.get(
       `${command.name}-${message.member.user.username}`
     );
-    let neededPermissions = checkPermissions(
+    const neededPermissions = checkPermissions(
       message.member,
       command.permissions
     );

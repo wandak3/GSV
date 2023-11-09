@@ -4,13 +4,13 @@ import { join } from "path";
 import { BotEvent } from "../types";
 
 module.exports = (client: Client) => {
-    let eventsDir = join(__dirname, "../events")
+  const eventsDir = join(__dirname, "../events");
 
-    readdirSync(eventsDir).forEach(file => {
-        if (!file.endsWith(".ts")) return;
-        let event: BotEvent = require(`${eventsDir}/${file}`).default
-        event.once 
-            ? client.once(event.name, (...args) => event.execute(...args))
-            : client.on(event.name, (...args) => event.execute(...args))
-    })
-}
+  readdirSync(eventsDir).forEach((file) => {
+    if (!file.endsWith(".ts")) return;
+    const event: BotEvent = require(`${eventsDir}/${file}`).default;
+    event.once
+      ? client.once(event.name, (...args) => event.execute(...args))
+      : client.on(event.name, (...args) => event.execute(...args));
+  });
+};

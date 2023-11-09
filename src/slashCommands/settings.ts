@@ -25,7 +25,7 @@ const command: SlashCommand = {
   cooldown: 1,
   execute: async (interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
-    let link = interaction.options.getString("link", true);
+    const link = interaction.options.getString("link", true);
     await setUserOption(interaction.user, "link", link);
     await interaction.reply("Đã thêm link database vào bot");
   },
