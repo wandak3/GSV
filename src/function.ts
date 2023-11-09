@@ -110,7 +110,7 @@ export async function getGachaScheduleConfig() {
 		await prisma.$disconnect();
 	}
 }
-
+/* Update sự kiện ước nguyện lên SQL */
 export const updateGachaScheduleConfig = async ({
 	url,
 	scheduleId,
@@ -170,7 +170,7 @@ export const updateGachaScheduleConfig = async ({
 		await prisma.$disconnect();
 	}
 };
-
+/* Update sự kiện lên SQL */
 export const updateEventScheduleConfig = async (event: string, start: Date, end: Date) => {
 	const uploadData: t_activity_schedule_config = {
 		schedule_id: Number(event),
@@ -192,5 +192,5 @@ export const updateEventScheduleConfig = async (event: string, start: Date, end:
 		return err.message;
 	}
 };
-
+/* Function tìm database */
 export const findGachaData = (name: string) => schedule.filter((data) => data.value === name);

@@ -88,10 +88,10 @@ const command: SlashCommand = {
 		),
 	cooldown: 1,
 	autocomplete: async (interaction) => {
-		/************************
-		 * Autocomplete sự kiện *
-		 ************************/
 		if (interaction.options.getSubcommand() === 'event') {
+			/************************
+			 * Autocomplete sự kiện *
+			 ************************/
 			try {
 				const focusedOption = interaction.options.getFocused(true);
 				const filtered: {value: string; name: string}[] = eventChoices.filter((choice) =>
@@ -132,10 +132,10 @@ const command: SlashCommand = {
 	},
 	execute: async (interaction: CommandInteraction) => {
 		if (!interaction.isChatInputCommand()) return;
-		/*************************
-		 * Thêm sự kiện vào server *
-		 *************************/
 		if (interaction.options.getSubcommand() === 'event') {
+			/*************************
+			 * Thêm sự kiện vào server *
+			 *************************/
 			const event = interaction.options.getString('name', true);
 			const eventValue = eventChoices.find((e) => e.name === event) ?? eventChoices.find((e) => e.value === event);
 			const startDate = interaction.options.getString('start') ?? new Date();
@@ -159,8 +159,10 @@ const command: SlashCommand = {
 			const gtype = interaction.options.getNumber('gtype', true);
 			const startDate = interaction.options.getString('start') ?? moment().toDate();
 			const endTime = interaction.options.getString('end') ?? '';
+			/* Tách thời gian trong string */
 			var letters = endTime.match(/[a-zA-Z]/g) ?? ['w'];
 			var digits = endTime.match(/[0-9]/g) ?? ['2'];
+			/* Thời gian kết thúc sự kiện */
 			const endDate = moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh')
 				.startOf('day')
 				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
@@ -241,19 +243,23 @@ const command: SlashCommand = {
 			/*************************
 			 * Thêm vũ khí vào server *
 			 *************************/
+			/* Tìm lấy input từ bot */
 			const weap1 = interaction.options.getString('weap1', true);
 			const weap2 = interaction.options.getString('weap2', true);
-			const weapon =
-				weaponChoices.filter((e) => e.name === weap1 || e.name === weap2) ??
-				weaponChoices.filter((e) => e.value === weap1 || e.value === weap2);
+			/* Tìm vũ khí trong database */
+			const weapon = weaponChoices.filter((e) => e.value === weap1 || e.value === weap2);
+			/* Tìm lấy input từ bot */
 			const startDate = interaction.options.getString('start') ?? moment().toDate();
 			const endTime = interaction.options.getString('end') ?? '';
+			/* Tách thời gian trong string */
 			var letters = endTime.match(/[a-zA-Z]/g) ?? ['w'];
 			var digits = endTime.match(/[0-9]/g) ?? ['2'];
+			/* Thời gian kết thúc sự kiện */
 			const endDate = moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh')
 				.startOf('day')
 				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
 				.toDate();
+			/* Tìm thông tin gacha từ database */
 			const gacha = findGachaData(weapon.join(','));
 		}
 	},
