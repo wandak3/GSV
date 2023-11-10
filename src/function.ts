@@ -169,6 +169,26 @@ export const updateGachaScheduleConfig = async ({
 	}
 };
 /* Update sự kiện lên SQL */
+export const getEventScheduleConfig = async (url: string) => {
+	try {
+		const prisma = new PrismaClient({datasources: {db: {url: url}}});
+		const data = await prisma.t_activity_schedule_config.findMany();
+		return data;
+	} catch (err: any) {
+		return err.message;
+	}
+};
+/* Update sự kiện lên SQL */
+export const deleteEventScheduleConfig = async (url: string, schedule_id: number) => {
+	try {
+		const prisma = new PrismaClient({datasources: {db: {url: url}}});
+		const data = await prisma.t_activity_schedule_config.delete({where: {schedule_id: schedule_id}});
+		return data;
+	} catch (err: any) {
+		return err.message;
+	}
+};
+/* Update sự kiện lên SQL */
 export const updateEventScheduleConfig = async (url: string, event: string, start: Date, end: Date) => {
 	const uploadData: t_activity_schedule_config = {
 		schedule_id: Number(event),
