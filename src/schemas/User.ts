@@ -4,7 +4,8 @@ import {IUser} from '../types';
 const UserSchema = new Schema<IUser>({
 	userID: {required: true, type: String},
 	options: {
-		link: {type: String, default: process.env.PREFIX},
+		link: {type: String, default: ''},
+		schedule: {type: Array, default: []},
 	},
 });
 

@@ -1,5 +1,5 @@
 import {Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, TextChannel, User} from 'discord.js';
-import {GuildOption, UserOption} from './types';
+import {GachaTypeGuard, GuildOption, UserOption} from './types';
 import GuildModel from './schemas/Guild';
 import UserModel from './schemas/User';
 import mongoose from 'mongoose';
@@ -84,21 +84,21 @@ export const setUserOption = async (user: User, option: UserOption, value: any) 
 			},
 			joinedAt: Date.now(),
 		});
-		newUser.options[option] = value;
 		newUser.save();
 	} else {
-		userdb.options[option] = value;
+		if (Array.isArray(userdb.options[option])) {
+			const index = userdb.options[option] as Array<any>;
+			index.push(value);
+		} else {
+			userdb.options[option] = value;
+		}
 		userdb.save();
 	}
 };
 
 export async function getGachaScheduleConfig() {
 	const prisma = new PrismaClient({
-		datasources: {
-			db: {
-				url: process.env.DATABASE_URL,
-			},
-		},
+		datasources: {db: {url: process.env.DATABASE_URL}},
 	});
 	try {
 		await prisma.$connect();
@@ -118,6 +118,8 @@ export const updateGachaScheduleConfig = async ({
 	gachaPropRuleId,
 	start,
 	end,
+	/* Weapon */
+	weapon,
 }: {
 	url: string;
 	scheduleId: number;
@@ -125,17 +127,13 @@ export const updateGachaScheduleConfig = async ({
 	gachaPropRuleId: number;
 	start: Date;
 	end: Date;
+	/* Weapon */
+	weapon?: string;
 }) => {
-	const prisma = new PrismaClient({
-		datasources: {
-			db: {
-				url: url,
-			},
-		},
-	});
+	const prisma = new PrismaClient({datasources: {db: {url: url}}});
 	try {
 		const _schedule = schedule.find((e) => e.scheduleId === scheduleId) ?? schedule[0];
-		const rateUpItems5 = _schedule.rateUpItems5.toString();
+		const rateUpItems5 = !weapon ? _schedule.rateUpItems5.toString() : weapon;
 		const rateUpItems4 = _schedule.rateUpItems4.toString();
 		const prob = gachaPropRuleId === 1 ? 500 : 750;
 		await prisma.$connect();
@@ -165,13 +163,13 @@ export const updateGachaScheduleConfig = async ({
 			data: scheduleSchema,
 		});
 	} catch (err: any) {
-		console.log('Error: ' + err.message);
+		return err;
 	} finally {
 		await prisma.$disconnect();
 	}
 };
 /* Update sự kiện lên SQL */
-export const updateEventScheduleConfig = async (event: string, start: Date, end: Date) => {
+export const updateEventScheduleConfig = async (url: string, event: string, start: Date, end: Date) => {
 	const uploadData: t_activity_schedule_config = {
 		schedule_id: Number(event),
 		begin_time: start,
@@ -179,18 +177,12 @@ export const updateEventScheduleConfig = async (event: string, start: Date, end:
 	};
 	try {
 		const prisma = new PrismaClient({
-			datasources: {
-				db: {
-					url: process.env.DATABASE_URL,
-				},
-			},
+			datasources: {db: {url: url}},
 		});
-		await prisma.t_activity_schedule_config.create({
-			data: uploadData,
-		});
+		await prisma.t_activity_schedule_config.create({data: uploadData});
 	} catch (err: any) {
 		return err.message;
 	}
 };
 /* Function tìm database */
-export const findGachaData = (name: string) => schedule.filter((data) => data.value === name);
+export const getGachadata = (name: string) => schedule.filter((data) => data.value.includes(name));

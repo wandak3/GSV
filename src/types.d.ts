@@ -15,15 +15,21 @@ type GuildOptions = {
 	prefix: string;
 };
 
+type GachaTypeGuard = {
+	gachaType: number;
+	date: Date;
+};
+
 type UserOptions = {
 	link: string;
+	schedule: Array<GachaTypeGuard>;
 };
 
 export type SlashCommand = {
 	command: SlashCommandBuilder | any;
 	cooldown?: number;
-	autocomplete?: (interaction: AutocompleteInteraction) => void;
-	execute: (interaction: CommandInteraction) => void;
+	autocomplete?: (interaction: AutocompleteInteraction, client?: Client) => void;
+	execute: (interaction: CommandInteraction, client?: Client) => void;
 };
 
 export type Command = {
@@ -63,7 +69,5 @@ declare module 'discord.js' {
 		slashCommands: Collection<string, SlashCommand>;
 		commands: Collection<string, Command>;
 		cooldowns: Collection<string, number>;
-		database: Collection<string, IGuild>;
-		doneGiveaway: GiveawayWinner[];
 	}
 }
