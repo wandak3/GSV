@@ -1,25 +1,7 @@
-import {
-	SlashCommandBuilder,
-	PermissionFlagsBits,
-	CommandInteraction,
-	EmbedBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	ActionRowBuilder,
-} from 'discord.js';
+import {SlashCommandBuilder, PermissionFlagsBits, CommandInteraction} from 'discord.js';
 import {SlashCommand} from '../types';
 import {eventChoices} from '../data/events';
-import {characterChoices} from '../data/character';
-import {weaponChoices} from '../data/weapon';
-import {
-	deleteEventScheduleConfig,
-	findGachaData,
-	getEventScheduleConfig,
-	getUserOption,
-	updateEventScheduleConfig,
-	updateGachaScheduleConfig,
-} from '../function';
-import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
+import {deleteEventScheduleConfig, getEventScheduleConfig, getUserOption} from '../function';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
