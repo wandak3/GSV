@@ -31,10 +31,8 @@ const command: SlashCommand = {
 		.addSubcommand((subcommand) =>
 			subcommand
 				.setName('all')
-				.setDescription('Thêm tất cả item + nhân vật ở level 1')
-				.addStringOption((option) =>
-					option.setName('name').setDescription('Tên sự kiện').setRequired(true).setAutocomplete(true)
-				)
+				.setDescription('Thêm tất cả item cho người chơi.')
+				.addStringOption((option) => option.setName('uid').setDescription('UID của người chơi').setRequired(true))
 		),
 	cooldown: 1,
 	autocomplete: async (interaction) => {
@@ -92,7 +90,7 @@ const command: SlashCommand = {
 					`http://${ip}:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20add%20${itemId.value}%20${amount}`
 				);
 				await interaction.reply({
-					content: `Đã thêm item ${itemId.name} cho người chơi ${uid}`,
+					content: `Đã thêm item ${itemId.name} cho người chơi UID ${uid}`,
 					ephemeral: true,
 				});
 			} catch (error) {
@@ -100,7 +98,7 @@ const command: SlashCommand = {
 			}
 		} else if (interaction.options.getSubcommand() === 'clear') {
 			/******************
-			 * GM item delete *
+			 * GM item clear *
 			 ******************/
 			/* Lấy input từ bot */
 			const id = interaction.options.getString('id', true);
@@ -118,7 +116,23 @@ const command: SlashCommand = {
 					`http://${ip}:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20clear%20${itemId.value}%20${amount}`
 				);
 				await interaction.reply({
-					content: `Đã xóa item ${itemId.name} khỏi người chơi ${uid}`,
+					content: `Đã xóa item ${itemId.name} khỏi người chơi UID ${uid}`,
+					ephemeral: true,
+				});
+			} catch (error) {
+				console.log(`Error in GM item: ${error.message}\nIP: ${ip}`);
+			}
+		} else if (interaction.options.getSubcommand() === 'all') {
+			/******************
+			 * GM item all *
+			 ******************/
+			/* Lấy input từ bot */
+			const uid = interaction.options.getString('uid', true);
+			if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
+			try {
+				await fetch(`http://${ip}:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20add%20all`);
+				await interaction.reply({
+					content: `Đã thêm tất cả item cho người chơi UID ${uid}`,
 					ephemeral: true,
 				});
 			} catch (error) {
