@@ -28,7 +28,7 @@ const command: SlashCommand = {
 		const ip = await getGuildOption(interaction.guild, 'address');
 		const uid = interaction.options.getString('uid', true);
 		const type = interaction.options.getString('type', true);
-		const amount = interaction.options.getNumber('type') ?? 1;
+		const amount = interaction.options.getNumber('amount') ?? 1;
 		const name = {
 			mcoin: 'Đá sáng thế',
 			scoin: 'Mora',
