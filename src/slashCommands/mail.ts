@@ -22,7 +22,7 @@ const command: SlashCommand = {
 		const receiver = new TextInputBuilder()
 			.setCustomId('receiverInput')
 			.setLabel('Nguời nhận:Người gửi')
-			.setPlaceholder('1:Wumpus')
+			.setPlaceholder('1:Paimon')
 			.setStyle(TextInputStyle.Short);
 
 		const expiry = new TextInputBuilder()
