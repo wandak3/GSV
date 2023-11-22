@@ -13,6 +13,7 @@ import {characterChoices} from '../data/character';
 import {weaponChoices} from '../data/weapon';
 import {
 	getGachadata,
+	getGuildOption,
 	getUserOption,
 	setUserOption,
 	updateEventScheduleConfig,
@@ -159,7 +160,8 @@ const command: SlashCommand = {
 				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
 				.toDate();
 			/* Bot phản hồi */
-			const url = await getUserOption(interaction.user, 'link');
+			if (!interaction.guild) return;
+			const url = await getGuildOption(interaction.guild, 'link');
 			if (!url) {
 				await interaction.reply({
 					content: 'Database không tồn tại. Vui lòng thử lại sau.',
@@ -272,7 +274,8 @@ const command: SlashCommand = {
 					filter: collectorFilter,
 					time: 60000,
 				});
-				const url = await getUserOption(interaction.user, 'link');
+				if (!interaction.guild) return;
+				const url = await getGuildOption(interaction.guild, 'link');
 				if (!url) {
 					await interaction.reply({
 						content: 'Database không tồn tại. Vui lòng thử lại sau.',
@@ -281,7 +284,7 @@ const command: SlashCommand = {
 				}
 				collector.on('collect', async (i) => {
 					const update = await updateGachaScheduleConfig({
-						url: await getUserOption(interaction.user, 'link'),
+						url: url,
 						gachaPropRuleId: 1,
 						scheduleId: parseInt(i.customId),
 						gachaType: gtype,
@@ -335,8 +338,9 @@ const command: SlashCommand = {
 				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
 				.toDate();
 			/* Tìm thông tin gacha từ database */
+			if (!interaction.guild) return;
 			const gacha = getGachadata(weapon!.value);
-			const url = await getUserOption(interaction.user, 'link');
+			const url = await getGuildOption(interaction.guild, 'link');
 			if (!url) {
 				await interaction.reply({
 					content: `Bạn chưa đăng ký URL database.`,
@@ -344,7 +348,7 @@ const command: SlashCommand = {
 				return;
 			}
 			const update = await updateGachaScheduleConfig({
-				url: await getUserOption(interaction.user, 'link'),
+				url: url,
 				gachaPropRuleId: 2,
 				scheduleId: gacha[0].scheduleId,
 				gachaType: 302,

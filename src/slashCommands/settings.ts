@@ -8,7 +8,7 @@ import {
 	ButtonStyle,
 } from 'discord.js';
 import {SlashCommand} from '../types';
-import {setUserOption} from '../function';
+import {setGuildOption, setUserOption} from '../function';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
@@ -46,14 +46,18 @@ const command: SlashCommand = {
 		try {
 			const confirmation = await response.awaitMessageComponent({filter: collectorFilter, time: 60_000});
 			if (confirmation.customId === 'official') {
-				await setUserOption(interaction.user, 'link', 'mysql://root:Wumpus@2023@35.215.146.105:3306/db_hk4e_config');
+				if (!interaction.guild) return interaction.editReply('Không thể thay đổi database ở DM');
+				await setGuildOption(interaction.guild, 'link', 'mysql://root:Wumpus@2023@35.215.146.105:3306/db_hk4e_config');
+				await setGuildOption(interaction.guild, 'address', '35.215.146.105');
 				await confirmation.update({
 					content: `Thay đổi thành công sang phiên bản chính thức`,
 					embeds: [],
 					components: [],
 				});
 			} else if (confirmation.customId === 'test') {
-				await setUserOption(interaction.user, 'link', 'mysql://root:Wumpus@2023@35.215.183.254:3306/db_hk4e_config');
+				if (!interaction.guild) return interaction.editReply('Không thể thay đổi database ở DM');
+				await setGuildOption(interaction.guild, 'link', 'mysql://root:Wumpus@2023@35.215.183.254:3306/db_hk4e_config');
+				await setGuildOption(interaction.guild, 'address', '35.215.183.254');
 				await confirmation.update({
 					content: 'Thay đổi thành công sang phiên bản thử nghiệm',
 					embeds: [],

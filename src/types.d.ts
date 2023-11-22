@@ -13,6 +13,8 @@ import EventEmitter from 'events';
 
 type GuildOptions = {
 	prefix: string;
+	link: string;
+	address: string;
 };
 
 type GachaTypeGuard = {
@@ -21,7 +23,6 @@ type GachaTypeGuard = {
 };
 
 type UserOptions = {
-	link: string;
 	schedule: Array<GachaTypeGuard>;
 };
 
@@ -69,5 +70,7 @@ declare module 'discord.js' {
 		slashCommands: Collection<string, SlashCommand>;
 		commands: Collection<string, Command>;
 		cooldowns: Collection<string, number>;
+		address: string;
+		database: string;
 	}
 }
