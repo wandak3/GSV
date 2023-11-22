@@ -1,6 +1,5 @@
 import {SlashCommandBuilder, PermissionFlagsBits, CommandInteraction} from 'discord.js';
 import {SlashCommand} from '../types';
-import {item} from '../data/item';
 import {getGuildOption} from '../function';
 
 const command: SlashCommand = {
