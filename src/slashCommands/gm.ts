@@ -2,6 +2,7 @@ import {SlashCommandBuilder, PermissionFlagsBits, CommandInteraction} from 'disc
 import {SlashCommand} from '../types';
 import {item} from '../data/item';
 import {getGuildOption} from '../function';
+import fetch from 'node-fetch';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
