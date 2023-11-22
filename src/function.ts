@@ -1,5 +1,5 @@
 import {Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, TextChannel, User} from 'discord.js';
-import {GachaTypeGuard, GuildOption, UserOption} from './types';
+import {GuildOption, UserOption} from './types';
 import GuildModel from './schemas/Guild';
 import UserModel from './schemas/User';
 import mongoose from 'mongoose';

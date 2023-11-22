@@ -8,7 +8,7 @@ import {
 	ButtonStyle,
 } from 'discord.js';
 import {SlashCommand} from '../types';
-import {setGuildOption, setUserOption} from '../function';
+import {setGuildOption} from '../function';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
@@ -65,6 +65,7 @@ const command: SlashCommand = {
 				});
 			}
 		} catch (e) {
+			console.log(e);
 			await interaction.editReply({
 				content: 'Không có lựa chọn nào được đưa ra. Hủy yêu cầu',
 				embeds: [],

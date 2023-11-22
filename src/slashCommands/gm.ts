@@ -52,10 +52,26 @@ const command: SlashCommand = {
 			} catch (error) {
 				console.log(`Error in Autocomplete item: ${error.message}`);
 			}
+		} else if (interaction.options.getSubcommand() === 'clear') {
+			/************************
+			 * Autocomplete Item *
+			 ************************/
+			try {
+				const focusedOption = interaction.options.getFocused(true);
+				const filtered: {value: string; name: string}[] = item.filter((choice) =>
+					choice.name.toLowerCase().includes(focusedOption.value.toLowerCase())
+				);
+				const options = filtered.length > 25 ? filtered.slice(0, 25) : filtered;
+				await interaction.respond(options);
+			} catch (error) {
+				console.log(`Error in Autocomplete item: ${error.message}`);
+			}
 		}
 	},
 	execute: async (interaction: CommandInteraction) => {
 		if (!interaction.isChatInputCommand()) return;
+		if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
+		const ip = await getGuildOption(interaction.guild, 'address');
 		if (interaction.options.getSubcommand() === 'add') {
 			/***************
 			 * GM item add *
@@ -65,7 +81,6 @@ const command: SlashCommand = {
 			const uid = interaction.options.getString('uid', true);
 			const amount = interaction.options.getNumber('amount') ?? 1;
 			if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
-			const ip = await getGuildOption(interaction.guild, 'address');
 			const itemId = item.find((e) => e.value === id) ?? item.find((e) => e.value === id);
 			if (!itemId)
 				return await interaction.reply({
@@ -74,7 +89,7 @@ const command: SlashCommand = {
 				});
 			try {
 				await fetch(
-					`http://localhost:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20add%20${itemId.value}%20${amount}`
+					`http://${ip}:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20add%20${itemId.value}%20${amount}`
 				);
 				await interaction.reply({
 					content: `Đã thêm item ${itemId.name} cho người chơi ${uid}`,
@@ -92,7 +107,6 @@ const command: SlashCommand = {
 			const uid = interaction.options.getString('uid', true);
 			const amount = interaction.options.getNumber('amount') ?? 1;
 			if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
-			const ip = await getGuildOption(interaction.guild, 'address');
 			const itemId = item.find((e) => e.value === id) ?? item.find((e) => e.value === id);
 			if (!itemId)
 				return await interaction.reply({
@@ -101,7 +115,7 @@ const command: SlashCommand = {
 				});
 			try {
 				await fetch(
-					`http://localhost:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20clear%20${itemId.value}%20${amount}`
+					`http://${ip}:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20clear%20${itemId.value}%20${amount}`
 				);
 				await interaction.reply({
 					content: `Đã xóa item ${itemId.name} khỏi người chơi ${uid}`,
