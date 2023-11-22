@@ -32,8 +32,7 @@ const event: BotEvent = {
 				}
 				await interaction.reply({content: 'Gửi thư thành công', ephemeral: true});
 			} catch (error) {
-				console.log(error);
-				await interaction.reply({content: 'Có lỗi xảy ra khi gửi thư.', ephemeral: true});
+				console.log(error.message);
 			}
 		}
 	},
