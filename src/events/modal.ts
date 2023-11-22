@@ -11,7 +11,7 @@ const event: BotEvent = {
 		if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
 		const ip = await getGuildOption(interaction.guild, 'address');
 		if (interaction.customId === 'mailForm') {
-			const receiver = interaction.fields.getTextInputValue('receiverInput').replace(/\s/g, '');
+			const receiver = interaction.fields.getTextInputValue('receiverInput');
 			const expiry = interaction.fields.getTextInputValue('expiryInput');
 			const title = interaction.fields.getTextInputValue('titleInput');
 			const description = interaction.fields.getTextInputValue('descriptionInput');
