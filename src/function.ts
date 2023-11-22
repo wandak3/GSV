@@ -96,10 +96,8 @@ export const setUserOption = async (user: User, option: UserOption, value: any) 
 	}
 };
 
-export async function getGachaScheduleConfig() {
-	const prisma = new PrismaClient({
-		datasources: {db: {url: process.env.DATABASE_URL}},
-	});
+export async function getGachaScheduleConfig(url: string) {
+	const prisma = new PrismaClient({datasources: {db: {url: url}}});
 	try {
 		await prisma.$connect();
 		const banners = await prisma.t_gacha_schedule_config.findMany();
@@ -166,6 +164,15 @@ export const updateGachaScheduleConfig = async ({
 		return err;
 	} finally {
 		await prisma.$disconnect();
+	}
+};
+export const deleteGachaScheduleConfig = async (url: string, schedule_id: number) => {
+	try {
+		const prisma = new PrismaClient({datasources: {db: {url: url}}});
+		await prisma.t_gacha_schedule_config.delete({where: {schedule_id: schedule_id}});
+	} catch (err: any) {
+		console.log(err.message);
+		return err.message;
 	}
 };
 /* Update sự kiện lên SQL */

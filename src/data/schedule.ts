@@ -1157,3 +1157,5 @@ export const schedule = [
 		titlePath: 'UI_GACHA_SHOW_PANEL_A020_TITLE',
 	},
 ];
+
+export type Schedule = (typeof schedule)[number];
