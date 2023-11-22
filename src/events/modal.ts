@@ -17,25 +17,23 @@ const event: BotEvent = {
 			const description = interaction.fields.getTextInputValue('descriptionInput');
 			const item = interaction.fields.getTextInputValue('itemInput').replace(/\s/g, '');
 			// Xử lý tên
-			const nameArray = receiver.split(':');
-			const name = nameArray.map((item) => {
-				const [uid, sender] = item.split(':');
-				return {uid, sender};
-			})[0];
+			const name = receiver.split(':');
 			// Ngày sang giây
 			const seconds = moment().add(Number(expiry), 'days').unix();
-			console.log(nameArray);
 			try {
 				const uuid = randomUUID().replace(/-/gi, '');
 				const res = await fetch(
-					`http://${ip}:10106/api?sender=${name.sender}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${name.uid}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
+					`http://${ip}:10106/api?sender=${name[1]}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${name[0]}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
 				);
 				const json = await res.json();
-				console.log(json);
+				if (json.msg !== 'succ') {
+					await interaction.reply({content: 'Gửi thư không thành công. Lỗi: `' + json.msg + '`', ephemeral: true});
+					return;
+				}
 				await interaction.reply({content: 'Gửi thư thành công', ephemeral: true});
 			} catch (error) {
 				console.log(error);
-				await interaction.reply({content: 'Có lỗi xảy ra khi gửi thư', ephemeral: true});
+				await interaction.reply({content: 'Có lỗi xảy ra khi gửi thư.', ephemeral: true});
 			}
 		}
 	},
