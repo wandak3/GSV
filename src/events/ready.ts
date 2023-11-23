@@ -1,6 +1,4 @@
-import moment from 'moment';
 import {BotEvent} from '../types';
-import {randomUUID} from 'crypto';
 import {ActivityType, Client} from 'discord.js';
 
 const event: BotEvent = {
@@ -15,12 +13,8 @@ const event: BotEvent = {
 				.filter((v: any) => typeof v === 'number')
 				.reduce((a: any, b: any) => a + b, 0),
 		});
-		setInterval(async () => {
-			const time = moment().unix();
-			const uuid = randomUUID().replace(/-/gi, '');
-			const res = await fetch(
-				`http://35.215.146.105:10106/api?cmd=1101&region=dev_docker&ticket=GM%${time}&sign=${uuid}`
-			);
+		(async function getPlayerOnline() {
+			const res = await fetch(`http://35.215.146.105:10106/api?cmd=1101&region=dev_docker&ticket=GM`);
 			const json = await res.json();
 			if (json.msg === 'succ') {
 				client.user?.setActivity(`with ${json.data.internal_data} players.`, {
@@ -29,7 +23,8 @@ const event: BotEvent = {
 			} else {
 				console.log(json);
 			}
-		}, 300000);
+			setTimeout(getPlayerOnline, 30000);
+		})();
 	},
 };
 
