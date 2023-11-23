@@ -2,3 +2,5 @@ node_modules
 bun.lockb
 pnpm-lock.yaml
 .env
+cmd.bat
+test.py
