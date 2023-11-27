@@ -53,6 +53,15 @@ export type UserOption = keyof UserOptions;
 
 export type GuildProperty = keyof GuildProperties;
 
+export type User = {
+	uid: number;
+	account_type: number;
+	account_uid: string;
+	create_time: Date;
+	ext: string;
+	tag: number;
+};
+
 export interface IGuild extends mongoose.Document {
 	guildID: string;
 	options: GuildOptions;

@@ -201,6 +201,7 @@ export const updateEventScheduleConfig = async (url: string, event: string, star
 		schedule_id: Number(event),
 		begin_time: start,
 		end_time: end,
+		desc: '',
 	};
 	try {
 		const prisma = new PrismaClient({
@@ -211,5 +212,44 @@ export const updateEventScheduleConfig = async (url: string, event: string, star
 		return err.message;
 	}
 };
+
+export const getUsers = async () => {
+	try {
+		const prisma = new PrismaClient({
+			datasources: {db: {url: 'mysql://root:Wumpus@2023@35.215.146.105:3306/db_hk4e_user'}},
+		});
+		const data = await prisma.t_player_uid.findMany();
+		return data;
+	} catch (err: any) {
+		return err.message;
+	}
+};
+
+export const fetchUsers = async (
+	ip: string,
+	sender: string,
+	title: string,
+	description: string,
+	item: string,
+	seconds: string,
+	uuid: string
+) => {
+	const users = await getUsers();
+	type User = {
+		uid: number;
+		account_type: number;
+		account_uid: string;
+		create_time: Date;
+		ext: string;
+		tag: number;
+	};
+	users.map(async (user: User) => {
+		await fetch(
+			`http://${ip}:10106/api?sender=${sender}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${user.uid}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
+		);
+	});
+	return;
+};
+
 /* Function tìm database */
 export const getGachadata = (name: string) => schedule.filter((data) => data.value.includes(name));

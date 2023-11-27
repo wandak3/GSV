@@ -1,6 +1,6 @@
 import {Interaction} from 'discord.js';
-import {BotEvent} from '../types';
-import {getGuildOption} from '../function';
+import {BotEvent, User} from '../types';
+import {fetchUsers, getGuildOption, getUsers} from '../function';
 import {randomUUID} from 'crypto';
 import moment from 'moment';
 
@@ -22,15 +22,35 @@ const event: BotEvent = {
 			const seconds = moment().add(Number(expiry), 'days').unix();
 			try {
 				const uuid = randomUUID().replace(/-/gi, '');
-				const res = await fetch(
-					`http://${ip}:10106/api?sender=${name[1]}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${name[0]}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
-				);
-				const json = await res.json();
-				if (json.msg !== 'succ') {
-					await interaction.reply({content: 'Gửi thư không thành công. Lỗi: `' + json.msg + '`', ephemeral: true});
-					return;
+				if (name[0] === 'all') {
+					const users = await getUsers();
+					let error: number[] = [];
+					users.map(async (user: User) => {
+						const res = await fetch(
+							`http://${ip}:10106/api?sender=${name[1]}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${user.uid}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
+						);
+						const json = await res.json();
+						if (json.msg !== 'succ') error.push(user.uid);
+					});
+					if (!error.length) {
+						await interaction.reply({content: 'Gửi thư thành công', ephemeral: true});
+					} else {
+						await interaction.reply({
+							content: 'Gửi thư không thành công ở các UID: `' + error.join(', ') + '`',
+							ephemeral: true,
+						});
+					}
+				} else {
+					const res = await fetch(
+						`http://${ip}:10106/api?sender=${name[1]}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${name[0]}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
+					);
+					const json = await res.json();
+					if (json.msg !== 'succ') {
+						await interaction.reply({content: 'Gửi thư không thành công. Lỗi: `' + json.msg + '`', ephemeral: true});
+						return;
+					}
+					await interaction.reply({content: 'Gửi thư thành công', ephemeral: true});
 				}
-				await interaction.reply({content: 'Gửi thư thành công', ephemeral: true});
 			} catch (error) {
 				console.log(error.message);
 			}
