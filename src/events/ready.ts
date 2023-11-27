@@ -13,8 +13,8 @@ const event: BotEvent = {
 				.filter((v: any) => typeof v === 'number')
 				.reduce((a: any, b: any) => a + b, 0),
 		});
-		try {
-			(async function getPlayerOnline() {
+		(async function getPlayerOnline() {
+			try {
 				const res = await fetch(`http://35.215.146.105:10106/api?cmd=1101&region=dev_docker&ticket=GM`);
 				const json = await res.json();
 				if (json.msg === 'succ') {
@@ -25,10 +25,10 @@ const event: BotEvent = {
 					console.log(json);
 				}
 				setTimeout(getPlayerOnline, 30000);
-			})();
-		} catch (error) {
-			console.log(error.message);
-		}
+			} catch (error) {
+				console.log(error.message);
+			}
+		})();
 	},
 };
 
