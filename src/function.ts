@@ -1,4 +1,16 @@
-import {Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, TextChannel, User} from 'discord.js';
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	CommandInteraction,
+	ComponentType,
+	Guild,
+	GuildMember,
+	PermissionFlagsBits,
+	PermissionResolvable,
+	TextChannel,
+	User,
+} from 'discord.js';
 import {GuildOption, UserOption} from './types';
 import GuildModel from './schemas/Guild';
 import UserModel from './schemas/User';
@@ -225,6 +237,44 @@ export const getUsers = async () => {
 	}
 };
 
+/* Function lấy danh sách level và username */
+export const getPlayerData = async () => {
+	try {
+		const prisma = new PrismaClient({
+			datasources: {db: {url: 'mysql://root:Wumpus@2023@35.215.146.105:3306/db_hk4e_user'}},
+		});
+		type User = {
+			nickname: string;
+			level: number;
+		};
+		let data = [];
+		const data0: User[] = await prisma.t_player_data_0.findMany();
+		data.push(...data0);
+		const data1: User[] = await prisma.t_player_data_1.findMany();
+		data.push(...data1);
+		const data2: User[] = await prisma.t_player_data_2.findMany();
+		data.push(...data2);
+		const data3: User[] = await prisma.t_player_data_3.findMany();
+		data.push(...data3);
+		const data4: User[] = await prisma.t_player_data_4.findMany();
+		data.push(...data4);
+		const data5: User[] = await prisma.t_player_data_5.findMany();
+		data.push(...data5);
+		const data6: User[] = await prisma.t_player_data_6.findMany();
+		data.push(...data6);
+		const data7: User[] = await prisma.t_player_data_7.findMany();
+		data.push(...data7);
+		const data8: User[] = await prisma.t_player_data_8.findMany();
+		data.push(...data8);
+		const data9: User[] = await prisma.t_player_data_9.findMany();
+		data.push(...data9);
+		data.sort((a, b) => b.level - a.level);
+		return data;
+	} catch (err: any) {
+		return err.message;
+	}
+};
+
 export const fetchUsers = async (
 	ip: string,
 	sender: string,
@@ -250,6 +300,71 @@ export const fetchUsers = async (
 	});
 	return;
 };
-
 /* Function tìm database */
 export const getGachadata = (name: string) => schedule.filter((data) => data.value.includes(name));
+
+/* Function Pagination */
+export const pagination = async (interaction: CommandInteraction, pages: any[], time: number) => {
+	await interaction.deferReply();
+	if (pages.length === 1) {
+		const page = await interaction.editReply({
+			embeds: [pages[0]],
+			components: [],
+		});
+		return page;
+	}
+	const prev = new ButtonBuilder()
+		.setCustomId('prev')
+		.setLabel('Previous')
+		.setStyle(ButtonStyle.Primary)
+		.setDisabled(true);
+
+	const next = new ButtonBuilder().setCustomId('next').setLabel('Next').setStyle(ButtonStyle.Primary);
+
+	const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents([prev, next]);
+	let index = 0;
+	const currentPage = await interaction.editReply({
+		embeds: [pages[index]],
+		components: [buttonRow],
+	});
+
+	const collector = await currentPage.createMessageComponentCollector({
+		componentType: ComponentType.Button,
+		time,
+	});
+
+	collector.on('collect', async (i) => {
+		if (i.user.id !== interaction.user.id) {
+			await i.reply({
+				content: 'Bạn không có quyền sử dụng lệnh này.',
+				ephemeral: true,
+			});
+		}
+		await i.deferUpdate();
+
+		if (i.customId === 'prev') {
+			index--;
+			prev.setDisabled(index === 0);
+			next.setDisabled(false);
+		} else if (i.customId === 'next') {
+			index++;
+			prev.setDisabled(false);
+			next.setDisabled(index === pages.length - 1);
+		}
+
+		await currentPage.edit({
+			embeds: [pages[index]],
+			components: [buttonRow],
+		});
+
+		collector.resetTimer();
+	});
+
+	collector.on('end', async () => {
+		await currentPage.edit({
+			embeds: [pages[index]],
+			components: [],
+		});
+	});
+	return currentPage;
+};
