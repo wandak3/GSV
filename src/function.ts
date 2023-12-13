@@ -334,37 +334,45 @@ export const pagination = async (interaction: CommandInteraction, pages: any[], 
 	});
 
 	collector.on('collect', async (i) => {
-		if (i.user.id !== interaction.user.id) {
-			await i.reply({
-				content: 'Bạn không có quyền sử dụng lệnh này.',
-				ephemeral: true,
+		try {
+			if (i.user.id !== interaction.user.id) {
+				await i.reply({
+					content: 'Bạn không có quyền sử dụng lệnh này.',
+					ephemeral: true,
+				});
+			}
+			await i.deferUpdate();
+
+			if (i.customId === 'prev') {
+				index--;
+				prev.setDisabled(index === 0);
+				next.setDisabled(false);
+			} else if (i.customId === 'next') {
+				index++;
+				prev.setDisabled(false);
+				next.setDisabled(index === pages.length - 1);
+			}
+
+			await currentPage.edit({
+				embeds: [pages[index]],
+				components: [buttonRow],
 			});
+
+			collector.resetTimer();
+		} catch (error) {
+			console.log(error);
 		}
-		await i.deferUpdate();
-
-		if (i.customId === 'prev') {
-			index--;
-			prev.setDisabled(index === 0);
-			next.setDisabled(false);
-		} else if (i.customId === 'next') {
-			index++;
-			prev.setDisabled(false);
-			next.setDisabled(index === pages.length - 1);
-		}
-
-		await currentPage.edit({
-			embeds: [pages[index]],
-			components: [buttonRow],
-		});
-
-		collector.resetTimer();
 	});
 
 	collector.on('end', async () => {
-		await currentPage.edit({
-			embeds: [pages[index]],
-			components: [],
-		});
+		try {
+			await currentPage.edit({
+				embeds: [pages[index]],
+				components: [],
+			});
+		} catch (error) {
+			console.log(error);
+		}
 	});
 	return currentPage;
 };
