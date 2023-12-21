@@ -228,7 +228,7 @@ export const updateEventScheduleConfig = async (url: string, event: string, star
 export const getUsers = async () => {
 	try {
 		const prisma = new PrismaClient({
-			datasources: {db: {url: 'mysql://root:Wumpus@2023@35.215.146.105:3306/db_hk4e_user'}},
+			datasources: {db: {url: 'mysql://root:Wumpus@2023@35.206.202.17:3306/db_hk4e_user'}},
 		});
 		const data = await prisma.t_player_uid.findMany();
 		return data;
@@ -241,7 +241,7 @@ export const getUsers = async () => {
 export const getPlayerData = async () => {
 	try {
 		const prisma = new PrismaClient({
-			datasources: {db: {url: 'mysql://root:Wumpus@2023@35.215.146.105:3306/db_hk4e_user'}},
+			datasources: {db: {url: 'mysql://root:Wumpus@2023@35.206.202.17:3306/db_hk4e_user'}},
 		});
 		type User = {
 			nickname: string;

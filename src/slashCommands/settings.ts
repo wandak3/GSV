@@ -47,8 +47,8 @@ const command: SlashCommand = {
 			const confirmation = await response.awaitMessageComponent({filter: collectorFilter, time: 60_000});
 			if (confirmation.customId === 'official') {
 				if (!interaction.guild) return interaction.editReply('Không thể thay đổi database ở DM');
-				await setGuildOption(interaction.guild, 'link', 'mysql://root:Wumpus@2023@35.215.146.105:3306/db_hk4e_config');
-				await setGuildOption(interaction.guild, 'address', '35.215.146.105');
+				await setGuildOption(interaction.guild, 'link', 'mysql://root:Wumpus@2023@35.206.202.17:3306/db_hk4e_config');
+				await setGuildOption(interaction.guild, 'address', '35.206.202.17');
 				await confirmation.update({
 					content: `Thay đổi thành công sang phiên bản chính thức`,
 					embeds: [],
