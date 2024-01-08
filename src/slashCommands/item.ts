@@ -172,10 +172,17 @@ const command: SlashCommand = {
 					},"append_prop_id_list":[${item.subStat}]}&region=dev_docker&ticket=GM@${uuid}&sign=${uuid}`
 				);
 				const response = await res.json();
-				await interaction.reply({
-					content: `Substats: ${item.subStat} \nResponse ${JSON.stringify(response)}`,
-					ephemeral: true,
-				});
+				if (response.msg === 'succ') {
+					await interaction.reply({
+						content: `Thêm thành công Thánh Dị Vật ${item.itemId} cho người chơi UID ${uid}`,
+						ephemeral: true,
+					});
+				} else {
+					await interaction.reply({
+						content: `Có lỗi xảy ra.\nResponse ${JSON.stringify(response)}`,
+						ephemeral: true,
+					});
+				}
 			} catch (error) {
 				console.log(`Error in GM item: ${error.message}\nIP: ${ip}`);
 			}
