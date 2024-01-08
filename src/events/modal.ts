@@ -1,7 +1,6 @@
 import {Interaction} from 'discord.js';
 import {BotEvent, User} from '../types';
 import {fetchUsers, getGuildOption, getUsers} from '../function';
-import {randomUUID} from 'crypto';
 import moment from 'moment';
 
 const event: BotEvent = {
@@ -21,7 +20,7 @@ const event: BotEvent = {
 			// Ngày sang giây
 			const seconds = moment().add(Number(expiry), 'days').unix();
 			try {
-				const uuid = randomUUID().replace(/-/gi, '');
+				const uuid = new Date().getTime();
 				if (name[0] === 'all') {
 					const users = await getUsers();
 					let error: number[] = [];

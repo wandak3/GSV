@@ -302,6 +302,18 @@ export const fetchUsers = async (
 };
 /* Function tìm database */
 export const getGachadata = (name: string) => schedule.filter((data) => data.value.includes(name));
+/* Function substats */
+export const extractSubstats = (substatsString: string) => {
+	const substatsArray = substatsString.split(' ');
+	const substats = substatsArray.flatMap((substat) => {
+		const parts = substat.split(',');
+		if (parts.length === 2) {
+			return new Array(parseInt(parts[1])).fill(parts[0]);
+		}
+		return [];
+	});
+	return substats;
+};
 
 /* Function Pagination */
 export const pagination = async (interaction: CommandInteraction, pages: any[], time: number) => {

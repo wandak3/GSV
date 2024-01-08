@@ -1,7 +1,7 @@
 import {SlashCommandBuilder, PermissionFlagsBits, CommandInteraction} from 'discord.js';
 import {SlashCommand} from '../types';
 import {item} from '../data/item';
-import {getGuildOption} from '../function';
+import {getGuildOption, extractSubstats} from '../function';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
@@ -33,6 +33,13 @@ const command: SlashCommand = {
 				.setName('all')
 				.setDescription('Thêm tất cả item cho người chơi.')
 				.addStringOption((option) => option.setName('uid').setDescription('UID của người chơi').setRequired(true))
+		)
+		.addSubcommand((subcommand) =>
+			subcommand
+				.setName('artifact')
+				.setDescription('Thêm god roll artifact cho người chơi.')
+				.addStringOption((option) => option.setName('uid').setDescription('UID của người chơi').setRequired(true))
+				.addStringOption((option) => option.setName('command').setDescription('Lệnh từ web').setRequired(true))
 		),
 	cooldown: 1,
 	autocomplete: async (interaction) => {
@@ -138,7 +145,42 @@ const command: SlashCommand = {
 			} catch (error) {
 				console.log(`Error in GM item: ${error.message}\nIP: ${ip}`);
 			}
+		} else if (interaction.options.getSubcommand() === 'artifact') {
+			/******************
+			 * GM item all *
+			 ******************/
+			/* Lấy input từ bot */
+			const uid = interaction.options.getString('uid', true);
+			const command = interaction.options.getString('command', true);
+			const params = command.split(' ').slice(1);
+			const item = {
+				itemId: params[0],
+				level: parseInt(params[1].replace('lv', '')),
+				quantity: parseInt(params[2].replace('x', '')),
+				mainStat: params[3],
+				subStat: extractSubstats(params.slice(4).join(' ')) || null,
+			};
+
+			if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
+			try {
+				const uuid = new Date().getTime();
+				const res = await fetch(
+					`http://${ip}:10106/api?uid=${uid}&item_id=${item.itemId}&cmd=1127&item_count=${
+						item.quantity
+					}&extra_params={"level":%20${item.level + 1},"exp":%200,"main_prop_id":%20${
+						item.mainStat
+					},"append_prop_id_list":[${item.subStat}]}&region=dev_docker&ticket=GM@${uuid}&sign=${uuid}`
+				);
+				const response = await res.json();
+				await interaction.reply({
+					content: `Substats: ${item.subStat} \nResponse ${JSON.stringify(response)}`,
+					ephemeral: true,
+				});
+			} catch (error) {
+				console.log(`Error in GM item: ${error.message}\nIP: ${ip}`);
+			}
 		}
+		/*http://192.168.1.200:20011/api?uid=100000000&item_id=27514&cmd=1127&item_count=1&extra_params={"level":%2021,"exp":%200,"main_prop_id":%2015012,"append_prop_id_list":[501064,501234,501204,501204,501204,501204,501204,501224,501224]}&region=dev_gio_34&ticket=ticket@1696673176995&sign=sign*/
 	},
 };
 
