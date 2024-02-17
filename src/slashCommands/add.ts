@@ -7,18 +7,11 @@ import {
 	ButtonStyle,
 	ActionRowBuilder,
 } from 'discord.js';
-import {GachaTypeGuard, SlashCommand} from '../types';
+import {SlashCommand} from '../types';
 import {eventChoices} from '../data/events';
 import {characterChoices} from '../data/character';
 import {weaponChoices} from '../data/weapon';
-import {
-	getGachadata,
-	getGuildOption,
-	getUserOption,
-	setUserOption,
-	updateEventScheduleConfig,
-	updateGachaScheduleConfig,
-} from '../function';
+import {getGachadata, updateEventScheduleConfig, updateGachaScheduleConfig} from '../function';
 import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
 
 const command: SlashCommand = {
@@ -161,14 +154,7 @@ const command: SlashCommand = {
 				.toDate();
 			/* Bot phản hồi */
 			if (!interaction.guild) return;
-			const url = await getGuildOption(interaction.guild, 'link');
-			if (!url) {
-				await interaction.reply({
-					content: 'Database không tồn tại. Vui lòng thử lại sau.',
-				});
-				return;
-			}
-			const result = await updateEventScheduleConfig(url, eventValue!.value, moment(startDate).toDate(), endDate);
+			const result = await updateEventScheduleConfig(eventValue!.value, moment(startDate).toDate(), endDate);
 			if (!result) {
 				await interaction.reply({
 					content: `Thêm thành công sự kiện **${eventValue!.name}** vào server.`,
@@ -201,25 +187,6 @@ const command: SlashCommand = {
 				.startOf('day')
 				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
 				.toDate();
-			/* Tránh overlap gachaType */
-			const gachaGuard = await getUserOption(interaction.user, 'schedule');
-			if (gachaGuard.length) {
-				const gachaTypeGuardFilter = gachaGuard.find(
-					(e: {gachaType: number; date: Date}) =>
-						e.gachaType === gtype &&
-						moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh').diff(e.date, 'minutes') < 1
-				);
-				if (gachaTypeGuardFilter) {
-					await interaction.reply({
-						content: `Đã tồn tại gacha type ${gtype}, hoạt động đến ${moment(
-							gachaTypeGuardFilter.date,
-							'DD-MM-YYYY hh:mm:ss',
-							'Asia/Ho_Chi_Minh'
-						).format('DD/MM/YYYY HH:mm:ss')} trong server.`,
-					});
-					return;
-				}
-			}
 			/* Tìm nhân vật trong database */
 			const fiveStarValue =
 				characterChoices.find((e) => e.name === fiveStar) ?? characterChoices.find((e) => e.value === fiveStar);
@@ -275,16 +242,8 @@ const command: SlashCommand = {
 					time: 60000,
 				});
 				if (!interaction.guild) return;
-				const url = await getGuildOption(interaction.guild, 'link');
-				if (!url) {
-					await interaction.reply({
-						content: 'Database không tồn tại. Vui lòng thử lại sau.',
-					});
-					return;
-				}
 				collector.on('collect', async (i) => {
 					const update = await updateGachaScheduleConfig({
-						url: url,
 						gachaPropRuleId: 1,
 						scheduleId: parseInt(i.customId),
 						gachaType: gtype,
@@ -297,8 +256,6 @@ const command: SlashCommand = {
 							embeds: [],
 							components: [],
 						});
-						/* Thêm gacha type và database để guard */
-						await setUserOption(interaction.user, 'schedule', {gachaType: gtype, date: endDate});
 					} else {
 						await i.update({
 							content: `Có lỗi xảy ra khi thêm Sự kiện ước nguyện vào server.`,
@@ -340,15 +297,11 @@ const command: SlashCommand = {
 			/* Tìm thông tin gacha từ database */
 			if (!interaction.guild) return;
 			const gacha = getGachadata(weapon!.value);
-			const url = await getGuildOption(interaction.guild, 'link');
-			if (!url) {
-				await interaction.reply({
-					content: `Bạn chưa đăng ký URL database.`,
-				});
-				return;
-			}
+			await interaction.reply({
+				content: `Bạn chưa đăng ký URL database.`,
+			});
+			return;
 			const update = await updateGachaScheduleConfig({
-				url: url,
 				gachaPropRuleId: 2,
 				scheduleId: gacha[0].scheduleId,
 				gachaType: 302,

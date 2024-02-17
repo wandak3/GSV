@@ -7243,7 +7243,7 @@
  210103 : Inazuma - Lông Đại Bàng
  210104 : Gorou - Chó Nhàn Nhã
  210105 : Itto - Mặt Quỷ
- 210106 : Nhật Ký Hành Trình - Lyratum
+ 214861 : Nhật Ký Hành Trình - Lyratum
  210107 : Shenhe - Tiết Lược
  210108 : Yun Jin - Đối Âm
  210109 : Inazuma - Tokoyo

@@ -4,17 +4,11 @@ import {
 	ButtonStyle,
 	CommandInteraction,
 	ComponentType,
-	Guild,
 	GuildMember,
 	PermissionFlagsBits,
 	PermissionResolvable,
 	TextChannel,
-	User,
 } from 'discord.js';
-import {GuildOption, UserOption} from './types';
-import GuildModel from './schemas/Guild';
-import UserModel from './schemas/User';
-import mongoose from 'mongoose';
 import {schedule} from './data/schedule';
 import {PrismaClient} from '@prisma/client';
 import type {t_gacha_schedule_config, t_activity_schedule_config} from '@prisma/client';
@@ -40,76 +34,8 @@ export const sendTimedMessage = (message: string, channel: TextChannel, duration
 	return;
 };
 
-export const checkGuildDatabase = async (guild: Guild) => {
-	if (mongoose.connection.readyState === 0) throw new Error('Database not connected.');
-	const guildb = await GuildModel.findOne({guildID: guild.id});
-	if (!guildb) {
-		const newGuild = new GuildModel({
-			guildID: guild.id,
-			options: {},
-			joinedAt: Date.now(),
-		});
-		newGuild.save();
-	}
-};
-
-export const createGuildDatabase = async (guild: Guild) => {
-	if (mongoose.connection.readyState === 0) throw new Error('Database not connected.');
-	const newGuild = new GuildModel({
-		guildID: guild.id,
-		options: {},
-		joinedAt: Date.now(),
-	});
-	newGuild.save();
-};
-
-export const getGuildOption = async (guild: Guild, option: GuildOption) => {
-	if (mongoose.connection.readyState === 0) throw new Error('Database not connected.');
-	const guildb = await GuildModel.findOne({guildID: guild.id});
-	if (!guildb) return null;
-	return guildb.options[option];
-};
-
-export const setGuildOption = async (guild: Guild, option: GuildOption, value: any) => {
-	if (mongoose.connection.readyState === 0) throw new Error('Database not connected.');
-	const guildb = await GuildModel.findOne({guildID: guild.id});
-	if (!guildb) return;
-	guildb.options[option] = value;
-	guildb.save();
-};
-
-export const getUserOption: any = async (user: User, option: UserOption) => {
-	if (mongoose.connection.readyState === 0) throw new Error('Database not connected.');
-	const userdb = await UserModel.findOne({userID: user.id});
-	if (!userdb) return null;
-	return userdb.options[option];
-};
-
-export const setUserOption = async (user: User, option: UserOption, value: any) => {
-	if (mongoose.connection.readyState === 0) throw new Error('Database not connected.');
-	const userdb = await UserModel.findOne({userID: user.id});
-	if (!userdb) {
-		const newUser = new UserModel({
-			userID: user.id,
-			options: {
-				link: '',
-			},
-			joinedAt: Date.now(),
-		});
-		newUser.save();
-	} else {
-		if (Array.isArray(userdb.options[option])) {
-			const index = userdb.options[option] as Array<any>;
-			index.push(value);
-		} else {
-			userdb.options[option] = value;
-		}
-		userdb.save();
-	}
-};
-
-export async function getGachaScheduleConfig(url: string) {
-	const prisma = new PrismaClient({datasources: {db: {url: url}}});
+export async function getGachaScheduleConfig() {
+	const prisma = new PrismaClient();
 	try {
 		await prisma.$connect();
 		const banners = await prisma.t_gacha_schedule_config.findMany();
@@ -122,7 +48,6 @@ export async function getGachaScheduleConfig(url: string) {
 }
 /* Update sự kiện ước nguyện lên SQL */
 export const updateGachaScheduleConfig = async ({
-	url,
 	scheduleId,
 	gachaType,
 	gachaPropRuleId,
@@ -131,7 +56,6 @@ export const updateGachaScheduleConfig = async ({
 	/* Weapon */
 	weapon,
 }: {
-	url: string;
 	scheduleId: number;
 	gachaType: number;
 	gachaPropRuleId: number;
@@ -140,7 +64,7 @@ export const updateGachaScheduleConfig = async ({
 	/* Weapon */
 	weapon?: string;
 }) => {
-	const prisma = new PrismaClient({datasources: {db: {url: url}}});
+	const prisma = new PrismaClient();
 	try {
 		const _schedule = schedule.find((e) => e.scheduleId === scheduleId) ?? schedule[0];
 		const rateUpItems5 = !weapon ? _schedule.rateUpItems5.toString() : weapon;
@@ -178,9 +102,9 @@ export const updateGachaScheduleConfig = async ({
 		await prisma.$disconnect();
 	}
 };
-export const deleteGachaScheduleConfig = async (url: string, schedule_id: number) => {
+export const deleteGachaScheduleConfig = async (schedule_id: number) => {
 	try {
-		const prisma = new PrismaClient({datasources: {db: {url: url}}});
+		const prisma = new PrismaClient();
 		await prisma.t_gacha_schedule_config.delete({where: {schedule_id: schedule_id}});
 	} catch (err: any) {
 		console.log(err.message);
@@ -188,9 +112,9 @@ export const deleteGachaScheduleConfig = async (url: string, schedule_id: number
 	}
 };
 /* Update sự kiện lên SQL */
-export const getEventScheduleConfig = async (url: string) => {
+export const getEventScheduleConfig = async () => {
 	try {
-		const prisma = new PrismaClient({datasources: {db: {url: url}}});
+		const prisma = new PrismaClient();
 		const data = await prisma.t_activity_schedule_config.findMany();
 		return data;
 	} catch (err: any) {
@@ -198,9 +122,9 @@ export const getEventScheduleConfig = async (url: string) => {
 	}
 };
 /* Update sự kiện lên SQL */
-export const deleteEventScheduleConfig = async (url: string, schedule_id: number) => {
+export const deleteEventScheduleConfig = async (schedule_id: number) => {
 	try {
-		const prisma = new PrismaClient({datasources: {db: {url: url}}});
+		const prisma = new PrismaClient();
 		const data = await prisma.t_activity_schedule_config.delete({where: {schedule_id: schedule_id}});
 		return data;
 	} catch (err: any) {
@@ -208,7 +132,7 @@ export const deleteEventScheduleConfig = async (url: string, schedule_id: number
 	}
 };
 /* Update sự kiện lên SQL */
-export const updateEventScheduleConfig = async (url: string, event: string, start: Date, end: Date) => {
+export const updateEventScheduleConfig = async (event: string, start: Date, end: Date) => {
 	const uploadData: t_activity_schedule_config = {
 		schedule_id: Number(event),
 		begin_time: start,
@@ -216,9 +140,7 @@ export const updateEventScheduleConfig = async (url: string, event: string, star
 		desc: '',
 	};
 	try {
-		const prisma = new PrismaClient({
-			datasources: {db: {url: url}},
-		});
+		const prisma = new PrismaClient();
 		await prisma.t_activity_schedule_config.create({data: uploadData});
 	} catch (err: any) {
 		return err.message;
@@ -227,9 +149,11 @@ export const updateEventScheduleConfig = async (url: string, event: string, star
 
 export const getUsers = async () => {
 	try {
+		const user = process.env.USER_URL;
 		const prisma = new PrismaClient({
-			datasources: {db: {url: 'mysql://root:Wumpus@2023@35.206.202.17:3306/db_hk4e_user'}},
+			datasources: {db: {url: user}},
 		});
+		// @ts-expect-error
 		const data = await prisma.t_player_uid.findMany();
 		return data;
 	} catch (err: any) {
@@ -240,32 +164,43 @@ export const getUsers = async () => {
 /* Function lấy danh sách level và username */
 export const getPlayerData = async () => {
 	try {
+		const user = process.env.USER_URL;
 		const prisma = new PrismaClient({
-			datasources: {db: {url: 'mysql://root:Wumpus@2023@35.206.202.17:3306/db_hk4e_user'}},
+			datasources: {db: {url: user}},
 		});
 		type User = {
 			nickname: string;
 			level: number;
 		};
 		let data = [];
+		// @ts-expect-error
 		const data0: User[] = await prisma.t_player_data_0.findMany();
 		data.push(...data0);
+		// @ts-expect-error
 		const data1: User[] = await prisma.t_player_data_1.findMany();
 		data.push(...data1);
+		// @ts-expect-error
 		const data2: User[] = await prisma.t_player_data_2.findMany();
 		data.push(...data2);
+		// @ts-expect-error
 		const data3: User[] = await prisma.t_player_data_3.findMany();
 		data.push(...data3);
+		// @ts-expect-error
 		const data4: User[] = await prisma.t_player_data_4.findMany();
 		data.push(...data4);
+		// @ts-expect-error
 		const data5: User[] = await prisma.t_player_data_5.findMany();
 		data.push(...data5);
+		// @ts-expect-error
 		const data6: User[] = await prisma.t_player_data_6.findMany();
 		data.push(...data6);
+		// @ts-expect-error
 		const data7: User[] = await prisma.t_player_data_7.findMany();
 		data.push(...data7);
+		// @ts-expect-error
 		const data8: User[] = await prisma.t_player_data_8.findMany();
 		data.push(...data8);
+		// @ts-expect-error
 		const data9: User[] = await prisma.t_player_data_9.findMany();
 		data.push(...data9);
 		data.sort((a, b) => b.level - a.level);
@@ -295,7 +230,7 @@ export const fetchUsers = async (
 	};
 	users.map(async (user: User) => {
 		await fetch(
-			`http://${ip}:10106/api?sender=${sender}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${user.uid}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
+			`http://${ip}:14861/api?sender=${sender}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${user.uid}&cmd=1005&region=dev_gio&ticket=GM%40${seconds}&sign=${uuid}`
 		);
 	});
 	return;

@@ -28977,7 +28977,7 @@ export const item = [
 	},
 	{
 		name: 'Nhật Ký Hành Trình - Lyratum',
-		value: '210106',
+		value: '214861',
 	},
 	{
 		name: 'Shenhe - Tiết Lược',

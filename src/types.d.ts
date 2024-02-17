@@ -11,17 +11,6 @@ import {
 } from 'discord.js';
 import EventEmitter from 'events';
 
-type GuildOptions = {
-	prefix: string;
-	link: string;
-	address: string;
-};
-
-type GachaTypeGuard = {
-	gachaType: number;
-	date: Date;
-};
-
 type UserOptions = {
 	schedule: Array<GachaTypeGuard>;
 };
@@ -62,24 +51,10 @@ export type User = {
 	tag: number;
 };
 
-export interface IGuild extends mongoose.Document {
-	guildID: string;
-	options: GuildOptions;
-	joinedAt: Date;
-}
-
-export interface IUser extends mongoose.Document {
-	userID: string;
-	options: UserOptions;
-	joinedAt: Date;
-}
-
 declare module 'discord.js' {
 	export interface Client {
 		slashCommands: Collection<string, SlashCommand>;
 		commands: Collection<string, Command>;
 		cooldowns: Collection<string, number>;
-		address: string;
-		database: string;
 	}
 }

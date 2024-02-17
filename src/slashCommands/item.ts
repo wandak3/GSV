@@ -1,7 +1,7 @@
 import {SlashCommandBuilder, PermissionFlagsBits, CommandInteraction} from 'discord.js';
 import {SlashCommand} from '../types';
 import {item} from '../data/item';
-import {getGuildOption, extractSubstats} from '../function';
+import {extractSubstats} from '../function';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
@@ -76,7 +76,7 @@ const command: SlashCommand = {
 	execute: async (interaction: CommandInteraction) => {
 		if (!interaction.isChatInputCommand()) return;
 		if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
-		const ip = await getGuildOption(interaction.guild, 'address');
+		const ip = process.env.IP;
 		if (interaction.options.getSubcommand() === 'add') {
 			/***************
 			 * GM item add *
@@ -94,7 +94,7 @@ const command: SlashCommand = {
 				});
 			try {
 				await fetch(
-					`http://${ip}:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20add%20${itemId.value}%20${amount}`
+					`http://${ip}:14861/api?region=dev_gio&ticket=GM&cmd=1116&uid=${uid}&msg=item%20add%20${itemId.value}%20${amount}`
 				);
 				await interaction.reply({
 					content: `Đã thêm item ${itemId.name} cho người chơi UID ${uid}`,
@@ -120,7 +120,7 @@ const command: SlashCommand = {
 				});
 			try {
 				await fetch(
-					`http://${ip}:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20clear%20${itemId.value}%20${amount}`
+					`http://${ip}:14861/api?region=dev_gio&ticket=GM&cmd=1116&uid=${uid}&msg=item%20clear%20${itemId.value}%20${amount}`
 				);
 				await interaction.reply({
 					content: `Đã xóa item ${itemId.name} khỏi người chơi UID ${uid}`,
@@ -137,13 +137,13 @@ const command: SlashCommand = {
 			const uid = interaction.options.getString('uid', true);
 			if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
 			try {
-				await fetch(`http://${ip}:10106/api?region=dev_docker&ticket=GM&cmd=1116&uid=${uid}&msg=item%20add%20all`);
+				await fetch(`http://${ip}:14861/api?region=dev_gio&ticket=GM&cmd=1116&uid=${uid}&msg=item%20add%20all`);
 				await interaction.reply({
 					content: `Đã thêm tất cả item cho người chơi UID ${uid}`,
 					ephemeral: true,
 				});
 			} catch (error) {
-				console.log(`Error in GM item: ${error.message}\nIP: ${ip}`);
+				console.log(`Error in GM item: ${error.message}\nIP: ${ip}\nCommand: `);
 			}
 		} else if (interaction.options.getSubcommand() === 'artifact') {
 			/******************
@@ -165,11 +165,11 @@ const command: SlashCommand = {
 			try {
 				const uuid = new Date().getTime();
 				const res = await fetch(
-					`http://${ip}:10106/api?uid=${uid}&item_id=${item.itemId}&cmd=1127&item_count=${
+					`http://${ip}:14861/api?uid=${uid}&item_id=${item.itemId}&cmd=1127&item_count=${
 						item.quantity
 					}&extra_params={"level":%20${item.level + 1},"exp":%200,"main_prop_id":%20${
 						item.mainStat
-					},"append_prop_id_list":[${item.subStat}]}&region=dev_docker&ticket=GM@${uuid}&sign=${uuid}`
+					},"append_prop_id_list":[${item.subStat}]}&region=dev_gio&ticket=GM@${uuid}&sign=${uuid}`
 				);
 				const response = await res.json();
 				if (response.msg === 'succ') {

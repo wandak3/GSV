@@ -7,7 +7,6 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 } from 'discord.js';
-import {item} from '../data/item';
 import {SlashCommand} from '../types';
 
 const command: SlashCommand = {

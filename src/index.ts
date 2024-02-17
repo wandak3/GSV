@@ -17,8 +17,6 @@ config();
 client.slashCommands = new Collection<string, SlashCommand>();
 client.commands = new Collection<string, Command>();
 client.cooldowns = new Collection<string, number>();
-client.address = '35.215.183.254:3306';
-client.database = 'mysql://root:Wumpus@2023@35.215.183.254:3306/db_hk4e_config';
 
 const handlersDir = join(__dirname, './handlers');
 readdirSync(handlersDir).forEach((handler) => {

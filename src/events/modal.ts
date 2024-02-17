@@ -1,6 +1,6 @@
 import {Interaction} from 'discord.js';
 import {BotEvent, User} from '../types';
-import {fetchUsers, getGuildOption, getUsers} from '../function';
+import {fetchUsers, getUsers} from '../function';
 import moment from 'moment';
 
 const event: BotEvent = {
@@ -8,7 +8,7 @@ const event: BotEvent = {
 	execute: async (interaction: Interaction) => {
 		if (!interaction.isModalSubmit()) return;
 		if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
-		const ip = await getGuildOption(interaction.guild, 'address');
+		const ip = process.env.IP;
 		if (interaction.customId === 'mailForm') {
 			const receiver = interaction.fields.getTextInputValue('receiverInput');
 			const expiry = interaction.fields.getTextInputValue('expiryInput');
@@ -26,7 +26,7 @@ const event: BotEvent = {
 					let error: number[] = [];
 					users.map(async (user: User) => {
 						const res = await fetch(
-							`http://${ip}:10106/api?sender=${name[1]}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${user.uid}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
+							`http://${ip}:14861/api?sender=${name[1]}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${user.uid}&cmd=1005&region=dev_gio&ticket=GM%40${seconds}&sign=${uuid}`
 						);
 						const json = await res.json();
 						if (json.msg !== 'succ') error.push(user.uid);
@@ -41,7 +41,7 @@ const event: BotEvent = {
 					}
 				} else {
 					const res = await fetch(
-						`http://${ip}:10106/api?sender=${name[1]}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${name[0]}&cmd=1005&region=dev_docker&ticket=GM%40${seconds}&sign=${uuid}`
+						`http://${ip}:14861/api?sender=${name[1]}&title=${title}&content=${description}&item_list=${item}&expire_time=${seconds}&is_collectible=False&uid=${name[0]}&cmd=1005&region=dev_gio&ticket=GM%40${seconds}&sign=${uuid}`
 					);
 					const json = await res.json();
 					if (json.msg !== 'succ') {

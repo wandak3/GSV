@@ -6,10 +6,9 @@ import {
 	deleteGachaScheduleConfig,
 	getEventScheduleConfig,
 	getGachaScheduleConfig,
-	getUserOption,
 } from '../function';
 import {schedule} from '../data/schedule';
-import type {t_gacha_schedule_config, t_activity_schedule_config} from '@prisma/client';
+import type {t_gacha_schedule_config, t_h5_activity_schedule_config} from '@prisma/client';
 import type {Schedule} from '../data/schedule';
 
 const command: SlashCommand = {
@@ -44,11 +43,12 @@ const command: SlashCommand = {
 			 ************************/
 			try {
 				const focusedOption = interaction.options.getFocused(true);
-				const url = await getUserOption(interaction.user, 'link');
-				const returnValue = await getEventScheduleConfig(url);
+				const returnValue = await getEventScheduleConfig();
 				if (!returnValue) return;
 				const event = eventChoices.filter((e) => {
-					const findResult = returnValue.find((v: t_activity_schedule_config) => parseInt(e.value) === v.schedule_id);
+					const findResult = returnValue.find(
+						(v: t_h5_activity_schedule_config) => parseInt(e.value) === v.schedule_id
+					);
 					return findResult;
 				});
 				const filtered: {name: string; value: string}[] = event.filter((choice: any) =>
@@ -65,8 +65,7 @@ const command: SlashCommand = {
 			 *********************************/
 			try {
 				const focusedOption = interaction.options.getFocused(true);
-				const url = await getUserOption(interaction.user, 'link');
-				const returnValue = await getGachaScheduleConfig(url);
+				const returnValue = await getGachaScheduleConfig();
 				if (!returnValue) return;
 				const gacha = schedule.filter((e) => {
 					const findResult = returnValue.find((v: t_gacha_schedule_config) => e.scheduleId === v.schedule_id);
@@ -90,16 +89,15 @@ const command: SlashCommand = {
 			 *************************/
 			const event = interaction.options.getString('name', true);
 			const eventValue = eventChoices.find((e) => e.name === event) ?? eventChoices.find((e) => e.value === event);
-			const url = await getUserOption(interaction.user, 'link');
 			if (!eventValue) {
 				await interaction.reply({
 					content: 'Sự kiện không tồn tại.',
 				});
 				return;
 			}
-			await deleteEventScheduleConfig(url, parseInt(eventValue!.value));
+			await deleteEventScheduleConfig(parseInt(eventValue!.value));
 			try {
-				await deleteEventScheduleConfig(url, parseInt(eventValue!.value));
+				await deleteEventScheduleConfig(parseInt(eventValue!.value));
 				await interaction.reply({
 					content: `Xoá thành công sự kiện ${eventValue!.name} khỏi server.`,
 				});
@@ -120,9 +118,8 @@ const command: SlashCommand = {
 				});
 				return;
 			}
-			const url = await getUserOption(interaction.user, 'link');
 			try {
-				await deleteGachaScheduleConfig(url, gachaValue!.scheduleId);
+				await deleteGachaScheduleConfig(gachaValue!.scheduleId);
 				await interaction.reply({
 					content: `Xoá thành công sự kiện ${gachaValue!.name} khỏi server.`,
 				});
