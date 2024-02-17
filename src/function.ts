@@ -153,7 +153,7 @@ export const getUsers = async () => {
 		const prisma = new PrismaClient({
 			datasources: {db: {url: user}},
 		});
-		// @ts-expect-error
+		// @ts-ignore
 		const data = await prisma.t_player_uid.findMany();
 		return data;
 	} catch (err: any) {
@@ -173,34 +173,34 @@ export const getPlayerData = async () => {
 			level: number;
 		};
 		let data = [];
-		// @ts-expect-error
+		// @ts-ignore
 		const data0: User[] = await prisma.t_player_data_0.findMany();
 		data.push(...data0);
-		// @ts-expect-error
+		// @ts-ignore
 		const data1: User[] = await prisma.t_player_data_1.findMany();
 		data.push(...data1);
-		// @ts-expect-error
+		// @ts-ignore
 		const data2: User[] = await prisma.t_player_data_2.findMany();
 		data.push(...data2);
-		// @ts-expect-error
+		// @ts-ignore
 		const data3: User[] = await prisma.t_player_data_3.findMany();
 		data.push(...data3);
-		// @ts-expect-error
+		// @ts-ignore
 		const data4: User[] = await prisma.t_player_data_4.findMany();
 		data.push(...data4);
-		// @ts-expect-error
+		// @ts-ignore
 		const data5: User[] = await prisma.t_player_data_5.findMany();
 		data.push(...data5);
-		// @ts-expect-error
+		// @ts-ignore
 		const data6: User[] = await prisma.t_player_data_6.findMany();
 		data.push(...data6);
-		// @ts-expect-error
+		// @ts-ignore
 		const data7: User[] = await prisma.t_player_data_7.findMany();
 		data.push(...data7);
-		// @ts-expect-error
+		// @ts-ignore
 		const data8: User[] = await prisma.t_player_data_8.findMany();
 		data.push(...data8);
-		// @ts-expect-error
+		// @ts-ignore
 		const data9: User[] = await prisma.t_player_data_9.findMany();
 		data.push(...data9);
 		data.sort((a, b) => b.level - a.level);
