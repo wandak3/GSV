@@ -10,7 +10,8 @@ import {
 	TextChannel,
 } from 'discord.js';
 import {schedule} from './data/schedule';
-import {PrismaClient} from '@prisma/client';
+import prisma from './prisma/prisma';
+import prisma_second from './prisma/prisma-second';
 import type {t_gacha_schedule_config, t_activity_schedule_config} from '@prisma/client';
 
 export const checkPermissions = (member: GuildMember, permissions: Array<PermissionResolvable>) => {
@@ -35,7 +36,6 @@ export const sendTimedMessage = (message: string, channel: TextChannel, duration
 };
 
 export async function getGachaScheduleConfig() {
-	const prisma = new PrismaClient();
 	try {
 		await prisma.$connect();
 		const banners = await prisma.t_gacha_schedule_config.findMany();
@@ -64,7 +64,6 @@ export const updateGachaScheduleConfig = async ({
 	/* Weapon */
 	weapon?: string;
 }) => {
-	const prisma = new PrismaClient();
 	try {
 		const _schedule = schedule.find((e) => e.scheduleId === scheduleId) ?? schedule[0];
 		const rateUpItems5 = !weapon ? _schedule.rateUpItems5.toString() : weapon;
@@ -104,7 +103,6 @@ export const updateGachaScheduleConfig = async ({
 };
 export const deleteGachaScheduleConfig = async (schedule_id: number) => {
 	try {
-		const prisma = new PrismaClient();
 		await prisma.t_gacha_schedule_config.delete({where: {schedule_id: schedule_id}});
 	} catch (err: any) {
 		console.log(err.message);
@@ -114,7 +112,6 @@ export const deleteGachaScheduleConfig = async (schedule_id: number) => {
 /* Update sự kiện lên SQL */
 export const getEventScheduleConfig = async () => {
 	try {
-		const prisma = new PrismaClient();
 		const data = await prisma.t_activity_schedule_config.findMany();
 		return data;
 	} catch (err: any) {
@@ -124,7 +121,6 @@ export const getEventScheduleConfig = async () => {
 /* Update sự kiện lên SQL */
 export const deleteEventScheduleConfig = async (schedule_id: number) => {
 	try {
-		const prisma = new PrismaClient();
 		const data = await prisma.t_activity_schedule_config.delete({where: {schedule_id: schedule_id}});
 		return data;
 	} catch (err: any) {
@@ -140,7 +136,6 @@ export const updateEventScheduleConfig = async (event: string, start: Date, end:
 		desc: '',
 	};
 	try {
-		const prisma = new PrismaClient();
 		await prisma.t_activity_schedule_config.create({data: uploadData});
 	} catch (err: any) {
 		return err.message;
@@ -150,11 +145,7 @@ export const updateEventScheduleConfig = async (event: string, start: Date, end:
 export const getUsers = async () => {
 	try {
 		const user = process.env.USER_URL;
-		const prisma = new PrismaClient({
-			datasources: {db: {url: user}},
-		});
-		// @ts-ignore
-		const data = await prisma.t_player_uid.findMany();
+		const data = await prisma_second.t_player_uid.findMany();
 		return data;
 	} catch (err: any) {
 		return err.message;
@@ -164,44 +155,30 @@ export const getUsers = async () => {
 /* Function lấy danh sách level và username */
 export const getPlayerData = async () => {
 	try {
-		const user = process.env.USER_URL;
-		const prisma = new PrismaClient({
-			datasources: {db: {url: user}},
-		});
 		type User = {
 			nickname: string;
 			level: number;
 		};
 		let data = [];
-		// @ts-ignore
-		const data0: User[] = await prisma.t_player_data_0.findMany();
+		const data0: User[] = await prisma_second.t_player_data_0.findMany();
 		data.push(...data0);
-		// @ts-ignore
-		const data1: User[] = await prisma.t_player_data_1.findMany();
+		const data1: User[] = await prisma_second.t_player_data_1.findMany();
 		data.push(...data1);
-		// @ts-ignore
-		const data2: User[] = await prisma.t_player_data_2.findMany();
+		const data2: User[] = await prisma_second.t_player_data_2.findMany();
 		data.push(...data2);
-		// @ts-ignore
-		const data3: User[] = await prisma.t_player_data_3.findMany();
+		const data3: User[] = await prisma_second.t_player_data_3.findMany();
 		data.push(...data3);
-		// @ts-ignore
-		const data4: User[] = await prisma.t_player_data_4.findMany();
+		const data4: User[] = await prisma_second.t_player_data_4.findMany();
 		data.push(...data4);
-		// @ts-ignore
-		const data5: User[] = await prisma.t_player_data_5.findMany();
+		const data5: User[] = await prisma_second.t_player_data_5.findMany();
 		data.push(...data5);
-		// @ts-ignore
-		const data6: User[] = await prisma.t_player_data_6.findMany();
+		const data6: User[] = await prisma_second.t_player_data_6.findMany();
 		data.push(...data6);
-		// @ts-ignore
-		const data7: User[] = await prisma.t_player_data_7.findMany();
+		const data7: User[] = await prisma_second.t_player_data_7.findMany();
 		data.push(...data7);
-		// @ts-ignore
-		const data8: User[] = await prisma.t_player_data_8.findMany();
+		const data8: User[] = await prisma_second.t_player_data_8.findMany();
 		data.push(...data8);
-		// @ts-ignore
-		const data9: User[] = await prisma.t_player_data_9.findMany();
+		const data9: User[] = await prisma_second.t_player_data_9.findMany();
 		data.push(...data9);
 		data.sort((a, b) => b.level - a.level);
 		return data;
