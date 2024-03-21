@@ -19,13 +19,11 @@ const event: BotEvent = {
 				const res = await fetch(`http://${ip}:14861/api?cmd=1101&region=dev_gio&ticket=GM`);
 				const json = await res.json();
 				if (json.msg === 'succ') {
-					client.user?.setActivity(`with ${json.data.internal_data} players.`, {
+					client.user?.setActivity(`with ${json.data.online_player_num_except_sub_account} players.`, {
 						type: ActivityType.Playing,
 					});
-				} else {
-					console.log(json);
 				}
-				setTimeout(getPlayerOnline, 30000);
+				setTimeout(getPlayerOnline, 10000);
 			} catch (error) {
 				console.log(error.message);
 			}
