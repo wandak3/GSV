@@ -300,3 +300,14 @@ export const pagination = async (interaction: CommandInteraction, pages: any[], 
 	});
 	return currentPage;
 };
+
+export async function getPlayerOnline() {
+	try {
+		const ip = process.env.IP;
+		const res = await fetch(`http://${ip}:14861/api?cmd=1101&region=dev_gio&ticket=GM`);
+		const json = await res.json();
+		return json.data.online_player_num_except_sub_account
+	} catch (error) {
+		return "down"
+	}
+}
