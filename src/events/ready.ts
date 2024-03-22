@@ -13,7 +13,7 @@ const event: BotEvent = {
 		setInterval(async () => {
 			const onlinePlayer = await getPlayerOnline();
 			if (onlinePlayer === "down") {
-				client.user?.setActivity(`with server maintainance.`, {
+				client.user?.setActivity(`Server down.`, {
 					type: ActivityType.Playing,
 				});
 			} else {
@@ -22,7 +22,7 @@ const event: BotEvent = {
 				});
 			}
 			
-		}, 5_000);
+		}, 60_000);
 	},
 };
 

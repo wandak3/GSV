@@ -33,19 +33,19 @@ const command: SlashCommand = {
 		const title = new TextInputBuilder()
 			.setCustomId('titleInput')
 			.setLabel('Tiêu đề thư')
-			.setPlaceholder("It's Paimon's Birthday!")
+			.setPlaceholder("Ví dụ: It's Paimon's Birthday!")
 			.setStyle(TextInputStyle.Short);
 
 		const description = new TextInputBuilder()
 			.setCustomId('descriptionInput')
 			.setLabel('Nội dung thư')
-			.setPlaceholder("You might be only one of countless stars, but you're Paimon's whole world!")
+			.setPlaceholder("Ví dụ: You might be only one of countless stars, but you're Paimon's whole world!")
 			.setStyle(TextInputStyle.Paragraph);
 
 		const item = new TextInputBuilder()
 			.setCustomId('itemInput')
 			.setLabel('Vật phẩm thêm')
-			.setPlaceholder('201:1000,202:1000')
+			.setPlaceholder('Ví dụ: 201:900')
 			.setStyle(TextInputStyle.Paragraph);
 
 		// An action row only holds one text input,
