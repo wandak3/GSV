@@ -13,11 +13,11 @@ const event: BotEvent = {
 		setInterval(async () => {
 			const onlinePlayer = await getPlayerOnline();
 			if (onlinePlayer === "down") {
-				client.user?.setActivity(`Server down.`, {
-					type: ActivityType.Playing,
+				client.user?.setActivity(`Bảo trì.`, {
+					type: ActivityType.Listening,
 				});
 			} else {
-				client.user?.setActivity(`with ${onlinePlayer} players.`, {
+				client.user?.setActivity(` với ${onlinePlayer} người.`, {
 					type: ActivityType.Playing,
 				});
 			}
