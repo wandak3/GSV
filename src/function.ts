@@ -152,38 +152,29 @@ export const getUsers = async () => {
 	}
 };
 
-/* Function lấy danh sách level và username */
-export const getPlayerData = async () => {
-	try {
-		type User = {
-			nickname: string;
-			level: number;
-		};
-		let data = [];
-		const data0: User[] = await prisma_second.t_player_data_0.findMany();
-		data.push(...data0);
-		const data1: User[] = await prisma_second.t_player_data_1.findMany();
-		data.push(...data1);
-		const data2: User[] = await prisma_second.t_player_data_2.findMany();
-		data.push(...data2);
-		const data3: User[] = await prisma_second.t_player_data_3.findMany();
-		data.push(...data3);
-		const data4: User[] = await prisma_second.t_player_data_4.findMany();
-		data.push(...data4);
-		const data5: User[] = await prisma_second.t_player_data_5.findMany();
-		data.push(...data5);
-		const data6: User[] = await prisma_second.t_player_data_6.findMany();
-		data.push(...data6);
-		const data7: User[] = await prisma_second.t_player_data_7.findMany();
-		data.push(...data7);
-		const data8: User[] = await prisma_second.t_player_data_8.findMany();
-		data.push(...data8);
-		const data9: User[] = await prisma_second.t_player_data_9.findMany();
-		data.push(...data9);
-		data.sort((a, b) => b.level - a.level);
-		return data;
-	} catch (err: any) {
-		return err.message;
+/* Function Data Users */
+/* http://wumpus.site:14861/api?cmd=1004&region=dev_gio&ticket=GM&uid=${uid} : Lấy thông tin tower */
+/* http://wumpus.site:14861/api?cmd=1004&region=dev_gio&ticket=GM&uid=${uid} : Lấy thông tin tower */
+
+export const getPlayerData = async (uid: string, char: string) => {
+	const userData = await fetch(`http://wumpus.site:14861/api?cmd=1004&region=dev_gio&ticket=GM&uid=${uid}`);
+	const itemData = await fetch(`http://wumpus.site:14861/api?cmd=1016&region=dev_gio&ticket=GM&uid=${uid}`);
+	const player = await userData.json()
+	const item = await itemData.json()
+	// Player Data
+	const player_data = player?.data?.bin_data?.avatar_bin?.avatar_list
+	const player_found_data = player_data.find((e: any) => e.avatar_id == Number(char));
+	// Item Data
+	const item_data = item?.data?.item_bin_data?.pack_store?.item_list
+	if (player_found_data?.formal_avatar) {
+		const item_list = player_found_data?.formal_avatar?.equip_guid_list;
+		const item_finding = item_list.map((item: number) => {
+			const found_item = item_data.find((requilary: any) => requilary?.guid == item);
+			return found_item?.equip?.reliquary;
+		})
+		if (!item_finding) return undefined;
+	} else {
+		const item_list = player_found_data?.equip_list;
 	}
 };
 
@@ -252,7 +243,7 @@ export const pagination = async (interaction: CommandInteraction, pages: any[], 
 		components: [buttonRow],
 	});
 
-	const collector = await currentPage.createMessageComponentCollector({
+	const collector = currentPage.createMessageComponentCollector({
 		componentType: ComponentType.Button,
 		time,
 	});

@@ -10,7 +10,7 @@ const command: SlashCommand = {
 		.addStringOption((option) =>
 			option
 				.setName('type')
-				.setDescription('Chọn loai tiền tệ')
+				.setDescription('Chọn loại tiền tệ')
 				.setRequired(true)
 				.addChoices(
 					{name: 'Đá sáng thế', value: 'mcoin'},

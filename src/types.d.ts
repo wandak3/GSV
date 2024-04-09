@@ -15,6 +15,44 @@ type UserOptions = {
 	schedule: Array<GachaTypeGuard>;
 };
 
+export const mainStats: {
+	[key: string]: number | string,
+   } = {
+	30960: 'critRate',
+	30950: 'critDamage:',
+	50880: 'em',
+	50990: 'atkPercent',
+	50980: 'hpPercent',
+	50970: 'defPercent',
+	15003: 'atkFlat',
+	15001: 'hpFlat',
+	10960: 'er',
+	30940: 'healingBonus',
+	50950: 'electro',
+	50960: 'pyro',
+	50940: 'cyro',
+	50930: 'hydro',
+	50910: 'geo',
+	50920: 'anemo',
+	50900: 'dendro',
+	50890: 'physical'
+}
+
+export const subStats: {
+	[key: string]: number | string,
+   } = {
+	501204: 'critRate',
+	501224: 'critDamage:',
+	501244: 'em',
+	501064: 'atkPercent',
+	501034: 'hpPercent',
+	501094: 'defPercent',
+	501054: 'atkFlat',
+	501024: 'hpFlat',
+	501084: 'defFlat',
+	501234: 'er'
+}
+
 export type SlashCommand = {
 	command: SlashCommandBuilder | any;
 	cooldown?: number;
