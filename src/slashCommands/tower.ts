@@ -16,6 +16,7 @@ const command: SlashCommand = {
 		const uid = interaction.options.getString('uid', true);
         await interaction.deferReply();
         const summary = await getTowerBin(uid);
+        if (!summary) return interaction.editReply('Không tìm thấy thông tin');
         let embeds: EmbedBuilder[] = [];
         for (let i = 0; i < Object.keys(summary).length; i++) {
             const embed = new EmbedBuilder()
