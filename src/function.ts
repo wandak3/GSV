@@ -178,6 +178,24 @@ export const getPlayerData = async (uid: string, char: string) => {
 	}
 };
 
+export const getTowerBin = async (uid: string | number) => {
+	try {
+		const rawBin = await fetch(`http://wumpus.site:14861/api?cmd=1004&region=dev_gio&ticket=GM&uid=${uid}`);
+		const bin = await rawBin.json()
+		const tower_monthly_summary_map = bin.data.bin_data.tower_bin.tower_monthly_summary_map;
+		const summary = {
+			"Bejeweled Moon": tower_monthly_summary_map["11"],
+			"Midwinter Moon": tower_monthly_summary_map["14"],
+			"Righteous Moon": tower_monthly_summary_map["16"],
+			"Steelsunder Moon": tower_monthly_summary_map["49"],
+			"Windswept Moon": tower_monthly_summary_map["51"],
+		}
+		return summary;
+	} catch (err: any) {
+		return err.message;
+	}
+};
+
 export const fetchUsers = async (
 	ip: string,
 	sender: string,
@@ -220,7 +238,6 @@ export const extractSubstats = (substatsString: string) => {
 
 /* Function Pagination */
 export const pagination = async (interaction: CommandInteraction, pages: any[], time: number) => {
-	await interaction.deferReply();
 	if (pages.length === 1) {
 		const page = await interaction.editReply({
 			embeds: [pages[0]],
@@ -243,51 +260,43 @@ export const pagination = async (interaction: CommandInteraction, pages: any[], 
 		components: [buttonRow],
 	});
 
-	const collector = currentPage.createMessageComponentCollector({
+	const collector = await currentPage.createMessageComponentCollector({
 		componentType: ComponentType.Button,
 		time,
 	});
 
 	collector.on('collect', async (i) => {
-		try {
-			if (i.user.id !== interaction.user.id) {
-				await i.reply({
-					content: 'Bạn không có quyền sử dụng lệnh này.',
-					ephemeral: true,
-				});
-			}
-			await i.deferUpdate();
-
-			if (i.customId === 'prev') {
-				index--;
-				prev.setDisabled(index === 0);
-				next.setDisabled(false);
-			} else if (i.customId === 'next') {
-				index++;
-				prev.setDisabled(false);
-				next.setDisabled(index === pages.length - 1);
-			}
-
-			await currentPage.edit({
-				embeds: [pages[index]],
-				components: [buttonRow],
+		if (i.user.id !== interaction.user.id) {
+			await i.reply({
+				content: 'Bạn không có quyền sử dụng lệnh này.',
+				ephemeral: true,
 			});
-
-			collector.resetTimer();
-		} catch (error) {
-			console.log(error);
 		}
+		await i.deferUpdate();
+
+		if (i.customId === 'prev') {
+			index--;
+			prev.setDisabled(index === 0);
+			next.setDisabled(false);
+		} else if (i.customId === 'next') {
+			index++;
+			prev.setDisabled(false);
+			next.setDisabled(index === pages.length - 1);
+		}
+
+		await currentPage.edit({
+			embeds: [pages[index]],
+			components: [buttonRow],
+		});
+
+		collector.resetTimer();
 	});
 
 	collector.on('end', async () => {
-		try {
-			await currentPage.edit({
-				embeds: [pages[index]],
-				components: [],
-			});
-		} catch (error) {
-			console.log(error);
-		}
+		await currentPage.edit({
+			embeds: [pages[index]],
+			components: [],
+		});
 	});
 	return currentPage;
 };

@@ -1,6 +1,6 @@
 import {Interaction} from 'discord.js';
 import {BotEvent, User} from '../types';
-import {fetchUsers, getUsers} from '../function';
+import {getUsers} from '../function';
 import moment from 'moment';
 
 const event: BotEvent = {
