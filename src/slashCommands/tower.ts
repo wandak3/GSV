@@ -42,11 +42,10 @@ const command: SlashCommand = {
                 value: `Damage nhận vào: ${most_take_damage.data}`,
             });
             const file_name = `${Avatar[highest_dps.avatar_id].replace(' ', '_')}_Icon`;
-            const file = new AttachmentBuilder(`../data/avatar/${file_name}.png`);
-            embed.setThumbnail(`attachment://${file_name}.png`);
+            embed.setThumbnail(`https://ik.imagekit.io/asiatarget/avatar/${file_name}.png?updatedAt=1712677263090`);
             embeds.push(embed);
         }
-        await pagination(interaction, embeds, 45000, file);
+        await pagination(interaction, embeds, 45000);
 	},
 };
 
