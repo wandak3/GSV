@@ -183,14 +183,10 @@ export const getTowerBin = async (uid: string | number) => {
 		const rawBin = await fetch(`http://wumpus.site:14861/api?cmd=1004&region=dev_gio&ticket=GM&uid=${uid}`);
 		const bin = await rawBin.json()
 		const tower_monthly_summary_map = bin.data.bin_data.tower_bin.tower_monthly_summary_map;
-		const summary = {
-			"Bejeweled Moon": tower_monthly_summary_map["11"],
-			"Midwinter Moon": tower_monthly_summary_map["14"],
-			"Righteous Moon": tower_monthly_summary_map["16"],
-			"Steelsunder Moon": tower_monthly_summary_map["49"],
-			"Windswept Moon": tower_monthly_summary_map["51"],
-		}
-		return summary;
+		return {
+			nickname: bin.data.nickname,
+			tower_monthly_summary_map: tower_monthly_summary_map
+		};
 	} catch (err: any) {
 		return err.message;
 	}
