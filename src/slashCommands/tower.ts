@@ -6,7 +6,7 @@ import { Avatar } from '../data/avatar';
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
 		.setName('tower')
-		.setDescription('Kiểm tra DPS La Hoàn')
+		.setDescription('Kiểm tra stats La Hoàn')
 		.addStringOption((option) => option.setName('uid').setDescription('UID của người chơi').setRequired(true)),
 	cooldown: 1,
 	execute: async (interaction: CommandInteraction) => {
@@ -41,7 +41,7 @@ const command: SlashCommand = {
                 value: `**Damage gây ra:** ${highest_dps?.data.toLocaleString()}`
             });
             embed.addFields({
-                name: `Nhân vật DMG to nhất: ${Avatar[most_take_damage?.avatar_id]}`,
+                name: `Nhân vật chống chịu tốt nhất: ${Avatar[most_take_damage?.avatar_id]}`,
                 value: `**Damage nhận vào:** ${most_take_damage?.data.toLocaleString()}`,
             });
             const file_name = `${Avatar[highest_dps?.avatar_id].replace(' ', '_')}_Icon`;
