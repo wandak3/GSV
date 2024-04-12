@@ -15,7 +15,6 @@ const command: SlashCommand = {
 		const ip = process.env.IP;
 		const uid = interaction.options.getString('uid', true);
         await interaction.deferReply();
-        await interaction.followUp('Đang tìm kiếm thông tin, vui lòng chờ trong giây lát...');
         const response = await getTowerBin(uid);
         if (!response) return interaction.editReply('Không tìm thấy thông tin');
         const summary = response.tower_monthly_summary_map;

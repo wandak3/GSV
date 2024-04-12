@@ -159,16 +159,6 @@ const command: SlashCommand = {
 				await interaction.reply({
 					content: `Thêm thành công sự kiện **${eventValue!.name}** vào server.`,
 				});
-			} else {
-				if (result.includes('Unique constraint'))
-					await interaction.reply({
-						content: 'Sự kiện đã tồn tại trong database. Vui lòng thử sự kiện khác.',
-					});
-				else {
-					await interaction.reply({
-						content: 'Đã có lỗi xảy ra. Vui lòng thử lại sau.',
-					});
-				}
 			}
 		} else if (interaction.options.getSubcommand() === 'character') {
 			/*************************
@@ -294,13 +284,7 @@ const command: SlashCommand = {
 				.startOf('day')
 				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
 				.toDate();
-			/* Tìm thông tin gacha từ database */
-			if (!interaction.guild) return;
 			const gacha = getGachadata(weapon!.value);
-			await interaction.reply({
-				content: `Bạn chưa đăng ký URL database.`,
-			});
-			return;
 			const update = await updateGachaScheduleConfig({
 				gachaPropRuleId: 2,
 				scheduleId: gacha[0].scheduleId,
