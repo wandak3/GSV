@@ -41,8 +41,6 @@ export async function getGachaScheduleConfig() {
 		return banners;
 	} catch (err: any) {
 		console.log('Error: ' + err.message);
-	} finally {
-		await prisma.$disconnect();
 	}
 }
 /* Update sự kiện ước nguyện lên SQL */
