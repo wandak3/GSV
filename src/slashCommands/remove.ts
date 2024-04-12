@@ -16,9 +16,6 @@ const command: SlashCommand = {
 		.setName('remove')
 		.setDescription('Xoá khỏi server')
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-		/************************
-		 * Sự kiện *
-		 ************************/
 		.addSubcommand((subcommand) =>
 			subcommand
 				.setName('event')
@@ -38,9 +35,6 @@ const command: SlashCommand = {
 	cooldown: 1,
 	autocomplete: async (interaction) => {
 		if (interaction.options.getSubcommand() === 'event') {
-			/************************
-			 * Autocomplete sự kiện *
-			 ************************/
 			try {
 				const focusedOption = interaction.options.getFocused(true);
 				const returnValue = await getEventScheduleConfig();
@@ -60,9 +54,6 @@ const command: SlashCommand = {
 				console.log(`Error in Autocomplete sự kiện: ${error.message}`);
 			}
 		} else if (interaction.options.getSubcommand() === 'gacha') {
-			/*********************************
-			 * Autocomplete sự kiện ước nguyện *
-			 *********************************/
 			try {
 				const focusedOption = interaction.options.getFocused(true);
 				const returnValue = await getGachaScheduleConfig();

@@ -37,7 +37,6 @@ export const sendTimedMessage = (message: string, channel: TextChannel, duration
 
 export async function getGachaScheduleConfig() {
 	try {
-		await prisma.$connect();
 		const banners = await prisma.t_gacha_schedule_config.findMany();
 		return banners;
 	} catch (err: any) {
