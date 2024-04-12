@@ -2,308 +2,100 @@ import {
 	SlashCommandBuilder,
 	PermissionFlagsBits,
 	CommandInteraction,
-	EmbedBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	ActionRowBuilder,
 } from 'discord.js';
 import {SlashCommand} from '../types';
-import {eventChoices} from '../data/events';
-import {characterChoices} from '../data/character';
-import {weaponChoices} from '../data/weapon';
-import {getGachadata, updateEventScheduleConfig, updateGachaScheduleConfig} from '../function';
-import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
+import fs from 'fs';
+import path from 'path';
+import prisma from '../prisma/prisma';
+import moment from 'moment';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
 		.setName('add')
-		.setDescription('Thêm vào server')
+		.setDescription('Thêm vào SQL')
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-		/************************
-		 * Sự kiện *
-		 ************************/
-		.addSubcommand((subcommand) =>
-			subcommand
-				.setName('event')
-				.setDescription('Thêm event vào server')
-				.addStringOption((option) =>
-					option.setName('name').setDescription('Tên event').setRequired(true).setAutocomplete(true)
-				)
-				.addStringOption((option) =>
-					option.setName('start').setDescription('Đặt thời gian bắt đầu cho sự kiện. Mặc định là hôm nay.')
-				)
-				.addStringOption((option) =>
-					option
-						.setName('end')
-						.setDescription('Đặt thời gian kéo dài cho sự kiện (1d, 2w, 3m, 4y). Mặc định là 2 tuần (2w)')
-				)
+		.addStringOption((option) =>
+			option.setName('event').setDescription('Tên sự kiện').setRequired(true).setAutocomplete(true)
 		)
-		/************************
-		 * Nhân vật *
-		 ************************/
-		.addSubcommand((subcommand) =>
-			subcommand
-				.setName('character')
-				.setDescription('Thêm sự kiện cầu nguyện vào server')
-				.addStringOption((option) =>
-					option.setName('5star').setDescription('Tên nhân vật 5 sao').setRequired(true).setAutocomplete(true)
-				)
-				.addNumberOption((option) =>
-					option
-						.setName('gtype')
-						.setDescription('Các gacha type cho nhân vật. Lưu ý: không được trùng nhau.')
-						.setRequired(true)
-						.addChoices({name: '301', value: 301}, {name: '400', value: 400})
-				)
-				.addStringOption((option) =>
-					option.setName('start').setDescription('Đặt thời gian bắt đầu cho sự kiện. Mặc định là hôm nay.')
-				)
-				.addStringOption((option) =>
-					option
-						.setName('end')
-						.setDescription('Đặt thời gian kéo dài cho sự kiện (1d, 2w, 3m, 4y). Mặc định là 2 tuần (2w)')
-				)
+		.addStringOption((option) =>
+			option.setName('enable')
+			.setDescription('Bắt đầu ngay?')
+			.addChoices(
+				{name: 'Có', value: '1'},
+				{name: 'Không', value: '0'},
+			)
 		)
-		/************************
-		 * Vũ khí *
-		 ************************/
-		.addSubcommand((subcommand) =>
-			subcommand
-				.setName('weapon')
-				.setDescription('Thêm vũ khí vào sự kiện cầu nguyện vào server')
-				.addStringOption((option) =>
-					option.setName('weap1').setDescription('Tên vũ khí').setRequired(true).setAutocomplete(true)
-				)
-				.addStringOption((option) =>
-					option.setName('weap2').setDescription('Tên vũ khí').setRequired(true).setAutocomplete(true)
-				)
-				.addStringOption((option) =>
-					option.setName('start').setDescription('Đặt thời gian bắt đầu cho sự kiện. Mặc định là hôm nay.')
-				)
-				.addStringOption((option) =>
-					option
-						.setName('end')
-						.setDescription('Đặt thời gian kéo dài cho sự kiện (1d, 2w, 3m, 4y). Mặc định là 2 tuần (2w)')
-				)
+		.addStringOption((option) =>
+			option.setName('begin').setDescription('Thời gian bắt đầu')
+		)
+		.addStringOption((option) =>
+			option.setName('end').setDescription('Thời gian kết thúc')
 		),
+		// INSERT INTO `db_hk4e_config_gio`.`t_gacha_schedule_config` (`schedule_id`, `gacha_type`, `begin_time`, `end_time`, `cost_item_id`, `cost_item_num`, `gacha_pool_id`, `gacha_prob_rule_id`, `gacha_up_config`, `gacha_rule_config`, `gacha_prefab_path`, `gacha_preview_prefab_path`, `gacha_prob_url`, `gacha_record_url`, `gacha_prob_url_oversea`, `gacha_record_url_oversea`, `gacha_sort_id`, `enabled`, `title_textmap`, `display_up4_item_list`) VALUES (23, 302, '2024-03-27 00:00:00', '2024-04-11 00:00:00', 223, 1, 201, 2, '{\"gacha_up_list\":[{\"item_parent_type\":1,\"prob\":750,\"item_list\":[14512,12510]},{\"item_parent_type\":2,\"prob\":500,\"item_list\":[15405,11403,12401,13416,14409,15401]}]}', '{}', 'GachaShowPanel_A111', 'UI_Tab_GachaShowPanel_A111', '', '', '', '', 3, 1, 'UI_GACHA_SHOW_PANEL_A020_TITLE', '15405,11403,12401,13416,14409,15401');
 	cooldown: 1,
 	autocomplete: async (interaction) => {
-		if (interaction.options.getSubcommand() === 'event') {
-			/************************
-			 * Autocomplete sự kiện *
-			 ************************/
-			try {
-				const focusedOption = interaction.options.getFocused(true);
-				const filtered: {value: string; name: string}[] = eventChoices.filter((choice) =>
-					choice.name.toLowerCase().includes(focusedOption.value.toLowerCase())
-				);
-				const options = filtered.length > 25 ? filtered.slice(0, 25) : filtered;
-				await interaction.respond(options);
-			} catch (error) {
-				console.log(`Error in Autocomplete sự kiện: ${error.message}`);
-			}
-		} else if (interaction.options.getSubcommand() === 'character') {
-			/*************************
-			 * Autocomplete nhân vật *
-			 *************************/
-			try {
-				const focusedOption = interaction.options.getFocused(true);
-				const filtered: {value: string; name: string; remark?: string}[] = characterChoices.filter((choice) => {
-					if (focusedOption.name === '5star')
-						return choice.name.toLowerCase().includes(focusedOption.value.toLowerCase()) && choice.remark === '5';
-					return choice.name.toLowerCase().includes(focusedOption.value.toLowerCase()) && choice.remark === '4';
-				});
-				const options = filtered.length > 25 ? filtered.slice(0, 25) : filtered;
-				await interaction.respond(options);
-			} catch (error) {
-				console.log(`Error in Autocomplete nhân vật: ${error.message}`);
-			}
-		} else if (interaction.options.getSubcommand() === 'weapon') {
-			/*************************
-			 * Autocomplete vũ khí *
-			 *************************/
-			try {
-				const focusedOption = interaction.options.getFocused(true);
-				const filtered: {value: string; name: string}[] = weaponChoices.filter((choice) => {
-					return choice.name.toLowerCase().includes(focusedOption.value.toLowerCase());
-				});
-				const options = filtered.length > 25 ? filtered.slice(0, 25) : filtered;
-				await interaction.respond(options);
-			} catch (error) {
-				console.log(`Error in Autocomplete vũ khí: ${error.message}`);
-			}
-		}
+		const jsonsInDir = fs.readdirSync('./src/data/references').filter(file => path.extname(file) === '.json');
+		const focusedOption = interaction.options.getFocused(true);
+		let bannerList: {name: string; value: string}[] = [];
+		jsonsInDir.forEach(file => {
+			const fileData = fs.readFileSync(path.join('./src/data/references', file));
+			const json = JSON.parse(fileData.toString());
+			json.forEach((data: any) => {
+				const version = data.comment.substring(0,6);
+				const nameData = data.comment.substring(6).length == 0 ? `Signature of ${version}` : `${data.comment.substring(6)} on Version ${version}`;
+				bannerList.push({name: nameData, value: file});
+			});
+		});
+		const filtered: {name: string; value: string}[] = bannerList.filter((choice: any) => {
+			return choice.name.includes(focusedOption.value)
+		});
+		const options = filtered.length > 25 ? filtered.slice(0, 25) : filtered;
+		await interaction.respond(options);
 	},
-	execute: async (interaction: CommandInteraction, client) => {
+	execute: async (interaction: CommandInteraction) => {
 		if (!interaction.isChatInputCommand()) return;
-		if (interaction.options.getSubcommand() === 'event') {
-			/*************************
-			 * Thêm sự kiện vào server *
-			 *************************/
-			/* Lấy input từ bot */
-			const event = interaction.options.getString('name', true);
-			const startDate = interaction.options.getString('start') ?? new Date();
-			const endTime = interaction.options.getString('end') ?? '';
-			/* Tìm sự kiện trong databse */
-			const eventValue = eventChoices.find((e) => e.name === event) ?? eventChoices.find((e) => e.value === event);
-			/* Tách thời gian trong string */
-			let letters = endTime.match(/[a-zA-Z]/g) ?? ['w'];
-			let digits = endTime.match(/[0-9]/g) ?? ['2'];
-			const endDate = moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh')
-				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
-				.toDate();
-			/* Bot phản hồi */
-			if (!interaction.guild) return;
-			const result = await updateEventScheduleConfig(eventValue!.value, moment(startDate).toDate(), endDate);
-			if (!result) {
-				await interaction.reply({
-					content: `Thêm thành công sự kiện **${eventValue!.name}** vào server.`,
-				});
-			}
-		} else if (interaction.options.getSubcommand() === 'character') {
-			/*************************
-			 * Thêm nhân vật vào server *
-			 *************************/
-			/* Lấy input từ bot */
-			const fiveStar = interaction.options.getString('5star', true);
-			const gtype = interaction.options.getNumber('gtype', true);
-			const startDate = interaction.options.getString('start') ?? moment().toDate();
-			const endTime = interaction.options.getString('end') ?? '';
-			/* Tách thời gian trong string */
-			let letters = endTime.match(/[a-zA-Z]/g) ?? ['w'];
-			let digits = endTime.match(/[0-9]/g) ?? ['2'];
-			/* Thời gian kết thúc sự kiện */
-			const endDate = moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh')
-				.startOf('day')
-				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
-				.toDate();
-			/* Tìm nhân vật trong database */
-			const fiveStarValue =
-				characterChoices.find((e) => e.name === fiveStar) ?? characterChoices.find((e) => e.value === fiveStar);
-			/* Tìm nhân vật trong database */
-			const gacha = getGachadata(fiveStarValue!.value);
-			/* Xây dựng embed */
-			const embed = new EmbedBuilder()
-				.setAuthor({
-					name: gacha[0].name,
-				})
-				.setColor('#404eed')
-				.setThumbnail(`https://genshindb.org/wp-content/uploads/2022/10/${gacha[0].name.replace(' ', '-')}.webp`)
-				.setTitle(
-					`Chọn phiên bản của sự kiện\nBắt đầu từ ${moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh').format(
-						'DD/MM/YYYY'
-					)} - ${moment(endDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh').format('DD/MM/YYYY')}`
-				)
-				.setTimestamp()
-				.setFooter({
-					text: 'GM Helper Bot',
-					iconURL: 'https://ik.imagekit.io/asiatarget/genshin/icon_128x128.png?updatedAt=1699385494260',
-				});
-			let row = new ActionRowBuilder<ButtonBuilder>();
-			/* Tổng hợp thông tin từ database */
-			gacha.map((data, index) => {
-				const rateUpItems = data.rateUpItems4.map((item) => {
-					return characterChoices.find((choice) => choice.value === item.toString())?.name;
-				});
-				embed.addFields({
-					name: `Phiên bản ${index + 1}`,
-					value: `
-          **Thứ tự:** ${data.scheduleId}
-          **Tướng 4 sao:** tướng 4 sao có trong banner\n
-		  1. ${rateUpItems[0]}\n2. ${rateUpItems[1]}\n3. ${rateUpItems[2]}
-          `,
-					inline: true,
-				});
-				const button = new ButtonBuilder()
-					.setCustomId(`${data.scheduleId}`)
-					.setLabel(`Phiên bản ${index + 1}`)
-					.setStyle(ButtonStyle.Primary);
-				row.addComponents(button);
-			});
-			/* Bot phản hồi */
-			try {
-				const response = await interaction.reply({
-					embeds: [embed],
-					components: [row],
-				});
-				const collectorFilter = (i: any) => i.user.id === interaction.user.id;
-				const collector = response.createMessageComponentCollector({
-					filter: collectorFilter,
-					time: 60000,
-				});
-				if (!interaction.guild) return;
-				collector.on('collect', async (i) => {
-					const update = await updateGachaScheduleConfig({
-						gachaPropRuleId: 1,
-						scheduleId: parseInt(i.customId),
-						gachaType: gtype,
-						start: moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh').toDate(),
-						end: endDate,
-					});
-					if (!update) {
-						await i.update({
-							content: `Thêm thành công Sự kiện ước nguyện vào server.`,
-							embeds: [],
-							components: [],
-						});
-					} else {
-						await i.update({
-							content: `Có lỗi xảy ra khi thêm Sự kiện ước nguyện vào server.`,
-							embeds: [],
-							components: [],
-						});
+		if (!interaction.guild) return interaction.reply('Không thể thực hiện ở DM');
+		const event = interaction.options.getString('event', true);
+		const enable = interaction.options.getString('enable') ?? '0';
+		const begin = interaction.options.getString('begin') ? moment(interaction.options.getString('begin')).startOf('day').toISOString() : moment().startOf('day').toISOString();
+		const end = interaction.options.getString('end') ? moment(interaction.options.getString('end')).toISOString() : moment(begin).add(2, 'w').toISOString();
+		try {
+			const getFileData = fs.readFileSync(path.join('./src/data/references', event));
+			const json = JSON.parse(getFileData.toString());
+			json.forEach(async (data: any) => {
+				await prisma.t_gacha_schedule_config.create({
+					data: {
+						gacha_type: data.gachaType,
+						begin_time: begin,
+						end_time: end,
+						cost_item_id: data.costItemId,
+						cost_item_num: 1,
+						gacha_pool_id: 201,
+						gacha_prob_rule_id: 1,
+						gacha_up_config: `{"gacha_up_list":[{"item_parent_type":1,"prob":${data.comment.substring(6).length == 0 ? '750' : '500'},"item_list":[${data.rateUpItems5.toString()}]},{"item_parent_type":2,"prob":500,"item_list":[${data.rateUpItems4.toString()}]}]}`,
+						gacha_rule_config: '{}',
+						gacha_prefab_path: data.prefabPath,
+						gacha_preview_prefab_path: `UI_Tab_${data.prefabPath}`,
+						gacha_prob_url: data.gacha_prob_url,
+						gacha_record_url: '',
+						gacha_prob_url_oversea: '',
+						gacha_record_url_oversea: '',
+						gacha_sort_id: data.comment.substring(6).length == 0 ? 3 : 982,
+						enabled: parseInt(enable),
+						title_textmap: data.comment.substring(6).length == 0 ? 'UI_GACHA_SHOW_PANEL_A020_TITLE' : data.titlePath,
+						display_up4_item_list: data.rateUpItems4.toString()
 					}
-				});
-			} catch (error) {
-				if (error.message === 'Invalid Form Body') {
-					await interaction.reply({
-						content: 'Có lỗi về form body. Vui lòng thử lại sau.',
-					});
-				} else {
-					await interaction.reply({
-						content: 'Có lỗi bất thường xảy ra. Mô tả lỗi: ' + error.message,
-					});
-				}
-			}
-		} else if (interaction.options.getSubcommand() === 'weapon') {
-			/*************************
-			 * Thêm vũ khí vào server *
-			 *************************/
-			/* Lấy input từ bot */
-			const weap1 = interaction.options.getString('weap1', true);
-			const weap2 = interaction.options.getString('weap2', true);
-			const startDate = interaction.options.getString('start') ?? moment().toDate();
-			const endTime = interaction.options.getString('end') ?? '';
-			/* Tìm vũ khí trong database */
-			const weapon = weaponChoices.find((e) => e.value === weap1) ?? weaponChoices.find((e) => e.name === weap1);
-			/* Tách thời gian trong string */
-			let letters = endTime.match(/[a-zA-Z]/g) ?? ['w'];
-			let digits = endTime.match(/[0-9]/g) ?? ['2'];
-			/* Thời gian kết thúc sự kiện */
-			const endDate = moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh')
-				.startOf('day')
-				.add(digits[0] as DurationInputArg1, letters[0].toUpperCase() as DurationInputArg2)
-				.toDate();
-			const gacha = getGachadata(weapon!.value);
-			const update = await updateGachaScheduleConfig({
-				gachaPropRuleId: 2,
-				scheduleId: gacha[0].scheduleId,
-				gachaType: 302,
-				start: moment(startDate, 'DD-MM-YYYY hh:mm:ss', 'Asia/Ho_Chi_Minh').toDate(),
-				end: endDate,
-				weapon: `${weap1},${weap2}`,
+				})
+			})
+			await interaction.reply({
+				content: 'Sự kiện đã được thêm vào Server!',
 			});
-			if (!update) {
-				await interaction.reply({
-					content: `Thêm thành công Sự kiện ước nguyện vũ khí vào server.`,
-				});
-			} else {
-				await interaction.reply({
-					content: `Có lỗi xảy ra khi thêm Sự kiện ước nguyện vũ khí vào server.`,
-				});
-			}
+		} catch (error) {
+			await interaction.reply({
+				content: `Có lỗi xảy ra! Chi tiết: ${error.message}`
+			});
 		}
-	},
+	}
 };
 
 export default command;

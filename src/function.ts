@@ -115,6 +115,7 @@ export const getEventScheduleConfig = async () => {
 		return err.message;
 	}
 };
+
 /* Update sự kiện lên SQL */
 export const deleteEventScheduleConfig = async (schedule_id: number) => {
 	try {
