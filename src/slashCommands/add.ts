@@ -21,7 +21,6 @@ const command: SlashCommand = {
 		)
 		.addStringOption((option) => option.setName('begin').setDescription('Thời gian bắt đầu'))
 		.addStringOption((option) => option.setName('end').setDescription('Thời gian kết thúc')),
-	// INSERT INTO `db_hk4e_config_gio`.`t_gacha_schedule_config` (`schedule_id`, `gacha_type`, `begin_time`, `end_time`, `cost_item_id`, `cost_item_num`, `gacha_pool_id`, `gacha_prob_rule_id`, `gacha_up_config`, `gacha_rule_config`, `gacha_prefab_path`, `gacha_preview_prefab_path`, `gacha_prob_url`, `gacha_record_url`, `gacha_prob_url_oversea`, `gacha_record_url_oversea`, `gacha_sort_id`, `enabled`, `title_textmap`, `display_up4_item_list`) VALUES (23, 302, '2024-03-27 00:00:00', '2024-04-11 00:00:00', 223, 1, 201, 2, '{\"gacha_up_list\":[{\"item_parent_type\":1,\"prob\":750,\"item_list\":[14512,12510]},{\"item_parent_type\":2,\"prob\":500,\"item_list\":[15405,11403,12401,13416,14409,15401]}]}', '{}', 'GachaShowPanel_A111', 'UI_Tab_GachaShowPanel_A111', '', '', '', '', 3, 1, 'UI_GACHA_SHOW_PANEL_A020_TITLE', '15405,11403,12401,13416,14409,15401');
 	cooldown: 1,
 	autocomplete: async (interaction) => {
 		const jsonsInDir = fs.readdirSync('./src/data/references').filter((file) => path.extname(file) === '.json');
