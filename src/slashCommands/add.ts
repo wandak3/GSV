@@ -38,9 +38,7 @@ const command: SlashCommand = {
 				bannerList.push({name: nameData, value: file});
 			});
 		});
-		const filtered: {name: string; value: string}[] = bannerList.filter((choice: any) => {
-			return choice.name.includes(focusedOption.value);
-		});
+		const filtered: {name: string; value: string}[] = bannerList.filter((choice: any) => choice.name.includes(focusedOption.value));
 		const options = filtered.length > 25 ? filtered.slice(0, 25) : filtered;
 		await interaction.respond(options);
 	},
