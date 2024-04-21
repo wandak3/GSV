@@ -36,20 +36,21 @@ const event: BotEvent = {
 			'Asia/Ho_Chi_Minh' // timeZone
 		);
 		setInterval(async () => {
-			const onlinePlayer = await getPlayerOnline();
-			const start = Date.now();
-			await fetch('http://37.114.63.115:2888');
-			const ping = (Date.now() - start);
-			if (onlinePlayer === "down") {
-				client.user?.setActivity(`Bảo trì.`, {
-					type: ActivityType.Listening,
-				});
-			} else {
-				client.user?.setActivity(` với ${onlinePlayer} người. Ping ${ping}ms`, {
-					type: ActivityType.Playing,
-				});
-			}
-
+			try {
+				const onlinePlayer = await getPlayerOnline();
+				const start = Date.now();
+				await fetch('http://37.114.63.115:2888');
+				const ping = (Date.now() - start);
+				if (onlinePlayer === "down") {
+					client.user?.setActivity(`Bảo trì.`, {
+						type: ActivityType.Listening,
+					});
+				} else {
+					client.user?.setActivity(` với ${onlinePlayer} người. Ping ${ping}ms`, {
+						type: ActivityType.Playing,
+					});
+				}
+			} catch (error) {}
 		}, 60_000);
 	},
 };
