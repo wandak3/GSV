@@ -20,7 +20,7 @@ with open(filename, encoding="utf8") as fh:
             dict = line.strip().split(":")
             if len(dict)>1:
                 dict1 = {
-                    "name": dict[1].rstrip().lstrip(),
+                    "name": dict[1].rstrip().lstrip() + ": " + dict[0].rstrip().lstrip(),
                     "value": dict[0].rstrip().lstrip()
                 }
                 result.append(dict1)
