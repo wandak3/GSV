@@ -28,10 +28,6 @@ export const item = [
         "value": "107"
     },
     {
-        "name": "[CHS] - (test)天体推演: 108",
-        "value": "108"
-    },
-    {
         "name": "Fading Star's Might: 109",
         "value": "109"
     },

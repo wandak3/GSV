@@ -1,308 +1,525 @@
-'use strict';
+const cmd = [
+	{
+	  name: '1001',
+	  value: 'queryPlayerAccountUid',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1002',
+	  value: 'queryPlayerUidByAccountUid',
+	  param: [ 'account_type', 'account_uid' ]
+	},
+	{
+	  name: '1004',
+	  value: 'queryPlayerBinInfo',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1005',
+	  value: 'sendMail',
+	  param: [
+		'uid',
+		'title',
+		'content',
+		'sender',
+		'expire_time',
+		'importance',
+		'config_id',
+		'item_limit_type',
+		'tag',
+		'source_type',
+		'item_list (separated by ,)'
+	  ]
+	},
+	{
+	  name: '1006',
+	  value: 'queryRedisMailInfo',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1007',
+	  value: 'queryPlayerPostion',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1009',
+	  value: 'queryCombatForce',
+	  param: [ 'uid' ]
+	},
+	{ name: '1011', value: 'queryRegions', param: null },
+	{
+	  name: '1012',
+	  value: 'queryPlayerWorldBinInfo',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1013',
+	  value: 'queryPlayerBlockBinInfo',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1014',
+	  value: 'queryPlayerGroupBinInfo',
+	  param: [ 'uid', 'group_id' ]
+	},
+	{
+	  name: '1015',
+	  value: 'queryPlayerQuestBinInfo',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1016',
+	  value: 'queryPlayerItemBinInfo',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1017',
+	  value: 'queryPlayerGroupBinInfo2',
+	  param: [ 'uid', 'group_id', 'block_id' ]
+	},
+	{
+	  name: '1018',
+	  value: 'queryPlayerCoopBinInfo',
+	  param: [ 'uid' ]
+	},
+	{ name: '1101', value: 'getPlayerNum', param: null },
+	{
+	  name: '1102',
+	  value: 'queryLoginBlackUid',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1103',
+	  value: 'updateLoginBlackUid',
+	  param: [ 'uid', 'begin_time', 'end_time' ]
+	},
+	{
+	  name: '1104',
+	  value: 'delLoginBlackUid',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1105',
+	  value: 'addWhiteAccountUid',
+	  param: [ 'account_type', 'account_uid' ]
+	},
+	{
+	  name: '1106',
+	  value: 'isWhiteAccountUid',
+	  param: [ 'account_type', 'account_uid' ]
+	},
+	{
+	  name: '1107',
+	  value: 'queryPlayerStatusRedisData',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1108',
+	  value: 'queryPlayerOnline',
+	  param: [ 'uid', 'gameserver_id' ]
+	},
+	{
+	  name: '1109',
+	  value: 'delPlayerStatusRedisData',
+	  param: [ 'uid', 'last_login_rand' ]
+	},
+	{
+	  name: '1110',
+	  value: 'guestBindAccount',
+	  param: [ 'account_id', 'uid', 'account_type' ]
+	},
+	{
+	  name: '1111',
+	  value: 'delItem',
+	  param: [ 'uid', 'item_id', 'item_num' ]
+	},
+	{
+	  name: '1112',
+	  value: 'playerGoto',
+	  param: [ 'uid', 'scene_id', 'x', 'y', 'z' ]
+	},
+	{
+	  name: '1113',
+	  value: 'resetParentQuest',
+	  param: [ 'uid', 'parent_quest_id' ]
+	},
+	{
+	  name: '1114',
+	  value: 'refreshGroupSuite',
+	  param: [ 'uid', 'group_id', 'suite_id' ]
+	},
+	{
+	  name: '1115',
+	  value: 'setScenePointLockStatus',
+	  param: null
+	},
+	{
+	  name: '1116',
+	  value: 'gmTalk',
+	  param: [ 'uid', 'msg' ]
+	},
+	{
+	  name: '1117',
+	  value: 'setNickName',
+	  param: [ 'uid', 'nickname' ]
+	},
+	{ name: '1118', value: 'refreshShop', param: [ 'uid' ] },
+	{
+	  name: '1119',
+	  value: 'unlockTalent',
+	  param: [ 'uid', 'avatar_id', 'skill_depot_id', 'talent_id' ]
+	},
+	{
+	  name: '1120',
+	  value: 'takeoffEquip',
+	  param: [ 'uid', 'avatar_id', 'equip_id' ]
+	},
+	{
+	  name: '1121',
+	  value: 'delMail',
+	  param: [ 'uid', 'mail_id' ]
+	},
+	{
+	  name: '1122',
+	  value: 'finishDailyTask',
+	  param: [ 'uid', 'daily_task_id' ]
+	},
+	{
+	  name: '1123',
+	  value: 'queryRedisOfflineMsg',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1124',
+	  value: 'unlockArea',
+	  param: [ 'uid', 'area_id' ]
+	},
+	{
+	  name: '1125',
+	  value: 'delItemNegative',
+	  param: [ 'uid', 'item_id', 'item_num' ]
+	},
+	{
+	  name: '1126',
+	  value: 'delEquip',
+	  param: [ 'uid', 'guid' ]
+	},
+	{
+	  name: '1127',
+	  value: 'addItem',
+	  param: [
+		'uid',
+		'item_id',
+		'item_count',
+		'[extra_params (oneof WeaponBin or ReliquaryBin)]'
+	  ]
+	},
+	{
+	  name: '1128',
+	  value: 'modifyBornPos',
+	  param: [ 'uid', 'scene_id', 'pos' ]
+	},
+	{
+	  name: '1129',
+	  value: 'getPlatformPlayerNum',
+	  param: null
+	},
+	{
+	  name: '1134',
+	  value: 'delRedisMail',
+	  param: [ 'uid', 'mail_index', 'mail_ticket' ]
+	},
+	{
+	  name: '1135',
+	  value: 'subCoinNegative',
+	  param: [ 'uid', 'scoin', 'hcoin', 'mcoin', 'is_psn' ]
+	},
+	{
+	  name: '1136',
+	  value: 'bindGmUid',
+	  param: [ 'gm_uid', 'player_uid' ]
+	},
+	{
+	  name: '1137',
+	  value: 'unBindGmUid',
+	  param: [ 'gm_uid' ]
+	},
+	{
+	  name: '1138',
+	  value: 'getBindGmUid',
+	  param: [ 'app_id' ]
+	},
+	{
+	  name: '1139',
+	  value: 'setQuestContentProgress',
+	  param: [ 'uid', 'quest_id', 'finish_progress', 'fail_progress' ]
+	},
+	{
+	  name: '1140',
+	  value: 'queryOrderDataByUid',
+	  param: [ 'uid', 'begin_trade_time', 'end_trade_time' ]
+	},
+	{
+	  name: '1141',
+	  value: 'queryOrderDataByTradeNo',
+	  param: [ 'trade_no' ]
+	},
+	{
+	  name: '1143',
+	  value: 'finishOrder',
+	  param: [ 'order_id' ]
+	},
+	{
+	  name: '1144',
+	  value: 'delRedisMailByTicket',
+	  param: [ 'uid', 'mail_ticket' ]
+	},
+	{
+	  name: '1145',
+	  value: 'insertMailBlockTag',
+	  param: null
+	},
+	{
+	  name: '1146',
+	  value: 'batchBlockPlayerChat',
+	  param: [ 'block_list' ]
+	},
+	{
+	  name: '1147',
+	  value: 'batchUnblockPlayerChat',
+	  param: [ 'unblock_uid_list (separated by ,)' ]
+	},
+	{
+	  name: '1148',
+	  value: 'queryPlayerChatBlockStatus',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1149',
+	  value: 'addOrModifyWatcher',
+	  param: [ 'uid', 'watcher_id', 'progress' ]
+	},
+	{
+	  name: '1150',
+	  value: 'delWatcher',
+	  param: [ 'uid', 'watcher_id' ]
+	},
+	{
+	  name: '1151',
+	  value: 'queryPlayerFriendList',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1152',
+	  value: 'checkVersions',
+	  param: [ 'server_version', 'client_version', 'client_silence_version' ]
+	},
+	{
+	  name: '1153',
+	  value: 'queryPlayerBriefData',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1154',
+	  value: 'queryPlayerExtraBinData',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1155',
+	  value: 'updatePlayerSecurityLevel',
+	  param: [ 'uid', 'check_type', 'security_level' ]
+	},
+	{
+	  name: '1156',
+	  value: 'QueryPlayerRegPlatform',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1157',
+	  value: 'addFeatureSwitch',
+	  param: [ 'id', 'type', 'msg' ]
+	},
+	{
+	  name: '1158',
+	  value: 'deleteFeatureSwitch',
+	  param: [ 'id' ]
+	},
+	{
+	  name: '1159',
+	  value: 'setSignature',
+	  param: [ 'uid', 'signature' ]
+	},
+	{
+	  name: '1160',
+	  value: 'addOrSubResin',
+	  param: [ 'uid', 'delta_count', 'is_sub' ]
+	},
+	{
+	  name: '1161',
+	  value: 'setQuestGlobalVarValue',
+	  param: [ 'uid', 'global_var_id', 'value' ]
+	},
+	{
+	  name: '1162',
+	  value: 'changeBindAccount',
+	  param: [ 'account_id', 'uid', 'account_type' ]
+	},
+	{
+	  name: '1163',
+	  value: 'SetUserTag',
+	  param: [ 'tag', 'uids (separated by ,)' ]
+	},
+	{
+	  name: '1164',
+	  value: 'batchBlockPlayerMp',
+	  param: [ 'block_uid_list' ]
+	},
+	{
+	  name: '1165',
+	  value: 'batchUnblockPlayerMp',
+	  param: [ 'unblock_uid_list (separated by ,)' ]
+	},
+	{
+	  name: '1166',
+	  value: 'queryPlayerMpBlockStatus',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1167',
+	  value: 'queryCrcSuspiciousList',
+	  param: [ 'uid' ]
+	},
+	{
+	  name: '1168',
+	  value: 'addToCrcSuspiciousList',
+	  param: [ 'uid_list', 'is_notify' ]
+	},
+	{
+	  name: '1169',
+	  value: 'removeFromCrcSuspiciousList',
+	  param: [ 'uid_list' ]
+	},
+	{
+	  name: '1170',
+	  value: 'checkCrcVersions',
+	  param: [ 'platform_type', 'client_version' ]
+	},
+	{
+	  name: '1171',
+	  value: 'forceAcceptQuest',
+	  param: [ 'uid', 'quest_id' ]
+	},
+	{
+	  name: '1172',
+	  value: 'setMainCoopConfidence',
+	  param: [ 'uid', 'confidence' ]
+	},
+	{
+	  name: '1173',
+	  value: 'addCoopPointSavePointList',
+	  param: [ 'uid', 'coop_point_id', 'save_point_list', 'ticket' ]
+	},
+	{
+	  name: '1174',
+	  value: 'setFinishParentQuestChildQuestState',
+	  param: [ 'uid', 'quest_id', 'state' ]
+	},
+	{
+	  name: '1175',
+	  value: 'setLevel1AreaExplorePoint',
+	  param: [ 'uid', 'scene_id', 'level1_area_id', 'explore_point' ]
+	},
+	{
+	  name: '1176',
+	  value: 'setCodexOpenOrClose',
+	  param: [ 'uid', 'codex_type', 'codex_id', 'is_open' ]
+	},
+	{
+	  name: '1200',
+	  value: 'addMcoinVipPoint',
+	  param: [ 'uid', 'mcoin', 'vip_point', 'is_psn' ]
+	},
+	{
+	  name: '1201',
+	  value: 'getPlayerLoginPerSecond',
+	  param: null
+	},
+	{
+	  name: '1210',
+	  value: 'getFineGrainedPlayerNum',
+	  param: null
+	},
+	{
+	  name: '1211',
+	  value: 'removeGadgetInGroupByConfigId',
+	  param: [ 'uid', 'scene_id', 'group_id', 'config_id' ]
+	},
+	{
+	  name: '1212',
+	  value: 'operateDelGadgetInGroupByConfigId',
+	  param: [ 'uid', 'scene_id', 'group_id', 'config_id', 'is_add' ]
+	},
+	{
+	  name: '1213',
+	  value: 'operateGadgetStateInGroupByConfigId',
+	  param: [
+		'uid',
+		'scene_id',
+		'group_id',
+		'config_id',
+		'state',
+		'is_create'
+	  ]
+	},
+	{
+	  name: '1214',
+	  value: 'removeMonsterInGroupByConfigId',
+	  param: [ 'uid', 'scene_id', 'group_id', 'config_id' ]
+	},
+	{
+	  name: '1215',
+	  value: 'operateDelMonsterInGroupByConfigId =>uid, scene_id, group_id, config_id, is_add',
+	  param: null
+	},
+	{
+	  name: '1216',
+	  value: 'removeGroupTriggerByName',
+	  param: [ 'uid', 'scene_id', 'group_id', 'trigger_name' ]
+	},
+	{
+	  name: '1217',
+	  value: 'setGroupTriggerCountByName',
+	  param: [ 'uid', 'scene_id', 'group_id', 'trigger_name', 'trigger_count' ]
+	},
+	{
+	  name: '1218',
+	  value: 'setGroupVariableByName',
+	  param: [ 'uid', 'scene_id', 'group_id', 'variable_name', 'value' ]
+	},
+	{
+	  name: '1219',
+	  value: 'setGroupTargetSuite',
+	  param: [ 'uid', 'scene_id', 'group_id', 'target_suite' ]
+	},
+	{
+	  name: '1220',
+	  value: 'removeGroupOneoffByConfigId',
+	  param: [ 'uid', 'scene_id', 'group_id', 'config_id', 'is_monster' ]
+	},
+	{
+	  name: '1221',
+	  value: 'finishRoutine',
+	  param: [ 'uid', 'routine_id' ]
+	}
+]
 
-const eventChoices = [
-	{name: 'Unreconciled Stars (Ngôi Sao Vụt Tắt Chưa Trở Về)', value: '2001001'},
-	{name: 'Lantern Rite (Tết Hải Đăng)', value: '2002001'},
-	{name: 'Windblume Festival (Lễ Hội Hoa Gió)', value: '2003001'},
-	{name: 'Energy Amplifier (Đĩa Dẫn Năng Lượng)', value: '2004001'},
-	{name: 'Thunder Sojourn (Truy Tìm Vết Sấm)', value: '2006001'},
-	{name: 'Moonlight Merriment (Trăng Thu Soi Sáng)', value: '2007001'},
-	{name: 'Labyrinth Warriors (Chiến Binh Bí Ẩn)', value: '2008001'},
-	{name: 'Fleeting Colors in Flight (Muôn Sắc Khắc Niên Hoa)', value: '2010001'},
-	{name: 'Three Realms Gateway Offering (Nghi Lễ Cổng Tam Giới)', value: '2011001'},
-	{name: 'Hues of the Violet Garden (Sắc Màu Rực Rỡ)', value: '2012001'},
-	{name: 'Perilous Trail (Lộ Trình Nguy Hiểm)', value: '2013001'},
-	{name: 'Summertime Odyssey (Chuyến Đi Biển Ngày Hè)', value: '2014001'},
-	{name: 'Graven Innocence (Trở Về Tuổi Thơ)', value: '2015001'},
-	{name: 'Of Ballads and Brews (Khúc Ca Vang Trong Rượu)', value: '2016001'},
-	{name: 'Fabulous Fungus Frenzy (Đại Hội Đấu Nấm Siêu Cấp)', value: '2017001'},
-	{name: 'The Exquisite Night Chimes (Âm Vang Dạ Tấu)', value: '2019001'},
-	{name: 'The Chalk Prince and the Dragon (Vôi Trắng và Rồng Đen)', value: '3001001'},
-	{name: 'Elemental Crucible (Lò Luyện Nguyên Tố)', value: '5001001'},
-	{name: 'Marvelous Merchandise (Cửa Hàng Đồ Hiếm)', value: '5003001'},
-	{name: 'Astrolabos Chapter (Chương Ánh Thiên)', value: '5004001'},
-	{name: 'Elemental Crucible (Lò Luyện Nguyên Tố)', value: '5005001'},
-	{name: "While It's Warm (Đồ Ăn Chưa Hâm Nóng)", value: '5006001'},
-	{name: 'Historia Antiqua Chapter (Chương Lời Đồn Năm Xưa)', value: '5009001'},
-	{name: 'Monoceros Caeli Chapter (Chương Kinh Thiên)', value: '5010001'},
-	{name: 'Lost Riches (Kho Báu Mất Dấu)', value: '5011001'},
-	{name: 'Marvelous Merchandise (Cửa Hàng Đồ Hiếm)', value: '5012001'},
-	{name: 'Hypostatic Symphony (Bài Thơ Giao Hưởng)', value: '5014001'},
-	{name: 'Inversion of Genesis (Cội Nguồn Nghiêng Ngả)', value: '5015001'},
-	{name: 'Five Flushes of Fortune (Phúc Lộc Ngũ Sắc)', value: '5016001'},
-	{name: 'Vishaps and Where to Find Them (Tìm Rồng Đất)', value: '5017001'},
-	{name: 'Papilio Charontis Chapter (Chương Dẫn Điệp)', value: '5018001'},
-	{name: 'Wishful Drops (Ước Nguyện Nước Trong)', value: '5020001'},
-	{name: 'Hangout Event (Sự Kiện Đồng Hành)', value: '5021001'},
-	{name: 'Battlefront: Misty Dungeon (Chiến Tuyến Mê Thành)', value: '5022001'},
-	{name: 'Windtrace (Cơn Gió Lạc Lối)', value: '5023001'},
-	{name: 'Mimi Tomo (Không Vào Hang Cọp Sao Bắt Được Cọp Con)', value: '5024001'},
-	{name: 'Historia Antiqua Chapter (Chương Lời Đồn Năm Xưa)', value: '5025001'},
-	{name: 'A Teapot to Call Home (Ấm Cẩm Thạch I)', value: '5027001'},
-	{name: 'Hangout Event (Sự Kiện Đồng Hành)', value: '5028001'},
-	{name: 'Aphros Delos Chapter (Chương Bọt Biển)', value: '5029001'},
-	{name: 'Never-Ending Battle (Cuộc Chiến Vô Tận)', value: '5030001'},
-	{name: 'Legend of the Vagabond Sword (Truyền Thuyết Thanh Kiếm Lãng Du)', value: '5031001'},
-	{name: 'Kaboomball Kombat (Hội Thao Bóng Bằng Bằng)', value: '5032001'},
-	{name: 'Echoing Tales (Âm Thanh Vang Vọng)', value: '5033001'},
-	{name: 'Phantom Flow (Trường Phái Geneishin)', value: '5034001'},
-	{name: 'Lost Riches (Kho Báu Mất Dấu)', value: '5035001'},
-	{name: 'Theater Mechanicus: Stage of Wonders (Cờ Cơ Quan - Thế Trận Linh Diệu)', value: '5037001'},
-	{name: 'Carassius Auratus Chapter (Chương Lưu Kim)', value: '5038001'},
-	{name: 'Grus Nivis Chapter (Chương Tuyết Hạc)', value: '5039001'},
-	{name: 'Lunar Realm (Vương Quốc Ánh Trăng)', value: '5041001'},
-	{name: 'Mendacious Waves (Thủy Nguyên Bản)', value: '5042001'},
-	{name: 'Distant Storm (Thực Thể Sấm Sét)', value: '5043001'},
-	{name: 'Spectral Secrets (Bóng Ma Thần Bí)', value: '5044001'},
-	{name: 'Dracaena Somnolenta Chapter (Chương Rồng Ngủ)', value: '5045001'},
-	{name: 'Imperatrix Umbrosa Chapter (Chương Thiên Hạ Nhân)', value: '5046001'},
-	{name: 'Dreams of Bloom (Giấc Mơ Hoa)', value: '5047001'},
-	{name: 'Hangout Event (Sự Kiện Đồng Hành)', value: '5048001'},
-	{name: 'Shadow of the Ancients (Bóng Hình Cổ Xưa)', value: '5049001'},
-	{name: "Tuned to the World's Sounds (Giai Điệu Vang Vọng)", value: '5050001'},
-	{name: 'Bantan Sango Case Files: The Warrior Dog (Hồ Sơ Bantan Sango - Khuyển Võ Giả)', value: '5051001'},
-	{name: 'Exploding Population (Đàn Cá Ồ Ạt)', value: '5052001'},
-	{name: 'Energy Amplifier (Đĩa Dẫn Năng Lượng)', value: '5053001'},
-	{name: 'Misty Dungeon: Realm of Light (Chiến Tuyến Mê Thành - Chương Ánh Sáng)', value: '5054001'},
-	{name: 'Hangout Event (Sự Kiện Đồng Hành)', value: '5056001'},
-	{name: 'Hangout Event (Sự Kiện Đồng Hành)', value: '5057001'},
-	{name: 'A Study in Potions (Nghiên Cứu Ma Dược)', value: '5058001'},
-	{name: 'Taurus Iracundus Chapter (Chương Thiên Ngưu)', value: '5059001'},
-	{name: 'Beastly Rift (Vết Nứt Quái Cảnh)', value: '5060001'},
-	{name: 'With Sleet and Storm (Đàn Rồng Biển Sâu)', value: '5061001'},
-	{name: 'Of Drink A-Dreaming (Một Ngụm Mộng Mơ)', value: '5062001'},
-	{name: 'The Crane Returns on the Wind (Phong Khởi Hạc Quy)', value: '5063001'},
-	{name: 'Vibro-Crystal Research (Nghiên Cứu Pha Lê)', value: '5067001'},
-	{name: 'Divina Vulpes Chapter (Chương Tiên Hồ)', value: '5069001'},
-	{name: 'Imperatrix Umbrosa Chapter (Chương Thiên Hạ Nhân)', value: '5070001'},
-	{name: 'Chasmic Serpent (Mãng Xà Di Tích)', value: '5071001'},
-	{
-		name: 'The Almighty Arataki Great and Glorious Drumalong Festival (Đại Hội Đánh Trống Arataki Long Trọng Bậc Nhất)',
-		value: '5072001',
-	},
-	{name: 'Hangout Event 1 (Sự Kiện Đồng Hành 1)', value: '5073001'},
-	{name: 'Hangout Event 2 (Sự Kiện Đồng Hành 2)', value: '5074001'},
-	{name: 'The Chasm (Vực Đá Sâu)', value: '5075001'},
-	{name: 'Requiem of the Echoing Depths (Khúc An Hồn Nơi Đáy Vực)', value: '5077001'},
-	{name: 'Cypressus Custos Chapter (Chương Thần Thủ Bách)', value: '5078001'},
-	{name: 'A Muddy Bizarre Adventure (Bùn Sâu Kỳ Quái)', value: '5079001'},
-	{name: 'Core of the Apparatus (Cốt Lõi Cơ Khí)', value: '5080001'},
-	{name: 'Umbrabilis Orchis Chapter (Chương U Khách)', value: '5081001'},
-	{name: 'Evermotion Mechanical Painting (Tranh Máy Móc Vĩnh Cửu)', value: '5082001'},
-	{name: 'Reminiscent Regimen (Hồi Tưởng Rèn Luyện)', value: '5083001'},
-	{name: 'Resonating Visions (Ảo Thanh Lưu Hình)', value: '5084001'},
-	{name: 'Murkwood Fungal Raptor (Nấm Thúy Linh)', value: '5086001'},
-	{name: 'Tablet Analytics (Nghiên Cứu Thuốc Viên)', value: '5087001'},
-	{name: 'Acer Palmatum Chapter (Chương Phong Đỏ)', value: '5088001'},
-	{name: 'Rumbleflower (Cây Kích Điện)', value: '5089001'},
-	{name: 'Lost Riches (Kho Báu Mất Dấu)', value: '5091001'},
-	{name: 'Vulpes Zerda Chapter (Chương Quách Hồ)', value: '5092001'},
-	{name: 'Dharma Forest (Rừng Dharma)', value: '5093001'},
-	{name: 'Wind Chaser (Ngọn Gió Tuần Tra)', value: '5095001'},
-	{name: "Star-Seeker's Sojourn (Hành Trình Tìm Sao)", value: '5096001'},
-	{name: 'Lupus Aureus Chapter (Chương Kim Lang)', value: '5100001'},
-	{name: 'Lotos Somno Chapter (Chương Thụy Liên)', value: '5101001'},
-	{name: 'Dreams, Emptiness, Deception (Ảo Mộng, Trống Rỗng Và Dối Gian)', value: '5105001'},
-	{name: 'Hypostatic Symphony: Dissonant Verse (Bài Thơ Giao Hưởng - Giai Điệu Lạc Nhịp)', value: '5107001'},
-	{name: 'Akasha Pulses, the Kalpa Flame Rises (Akasha Rung Động, Kiếp Hỏa Dâng Trào)', value: '5109001'},
-	{name: 'Battlefield of Dice, Cats, and Cards (Chiến Trường Xúc Xắc, Mèo Và Thẻ Bài)', value: '5110001'},
-	{name: 'Windtrace (Cơn Gió Lạc Lối)', value: '5111001'},
-	{name: 'Across the Wilderness (Truy Vết Nơi Hoang Dã)', value: '5112001'},
-	{name: 'Sapientia Oromasdis Chapter (Chương Chủ Trí Tuệ)', value: '5113001'},
-	{name: 'Misty Dungeon: Realm of Sand (Chiến Tuyến Mê Thành - Chương Sa Mạc)', value: '5114001'},
-	{name: 'Even Mountains Tremble (Gạch đá rêu phong tiễn chân người.)', value: '6002001'},
-	{name: 'Outland Gastronomy (Món Ăn Đất Khách)', value: '6003001'},
-	{name: 'Autumn Winds, Scarlet Leaves (Gió Thu Vén Áo Hỏi Lá Đỏ)', value: '6005001'},
-	{name: 'Machine Battlefront (Mô Hình Động Cơ Vĩnh Cửu)', value: '6006001'},
-	{name: 'Test Run Albedo (Thử nghiệm Albedo)', value: '5002005'},
-	{name: 'Test Run Ganyu (Thử nghiệm Ganyu)', value: '5002006'},
-	{name: 'Test Run Xiao (Thử nghiệm Xiao)', value: '5002007'},
-	{name: 'Test Run Keqing (Thử nghiệm Keqing)', value: '5002008'},
-	{name: 'Test Run Venti (Thử nghiệm Venti)', value: '5002010'},
-	{name: 'Test Run Zhongli (Thử nghiệm Zhongli)', value: '5002012'},
-	{name: 'Test Run Eula (Thử nghiệm Eula)', value: '5002013'},
-	{name: 'Test Run Klee (Thử nghiệm Klee)', value: '5002014'},
-	{name: 'Test Run Kazuha (Thử nghiệm Kazuha)', value: '5002015'},
-	{name: 'Test Run Shogun (Thử nghiệm Shogun)', value: '5002018'},
-	{name: 'Test Run Kokomi (Thử nghiệm Kokomi)', value: '5002019'},
-	{name: 'Test Run Childe (Thử nghiệm Childe)', value: '5002020'},
-	{name: 'Test Run Hutao (Thử nghiệm Hutao)', value: '5002021'},
-	{name: 'Test Run Yae (Thử nghiệm Yae)', value: '5002026'},
-	{name: 'Test Run Ayaka (Thử nghiệm Ayaka)', value: '5002029'},
-	{name: 'Test Run Itto (Thử nghiệm Itto)', value: '5002031'},
-	{name: 'Test Run Yoimiya (Thử nghiệm Yoimiya)', value: '5002033'},
-];
+const cmdMap = cmd.map((value) => {
+	const newValue = {
+		name: `${value.name}: ${value.value}`,
+		value: value.name,
+		param: value.param
+	}
+	return newValue
+}, {})
 
-const res = [
-	{value: '2001001', name: 'Unreconciled Stars'},
-	{value: '2002001', name: 'Lantern Rite'},
-	{value: '2003001', name: 'Windblume Festival'},
-	{value: '2004001', name: 'Energy Amplifier'},
-	{value: '2005001', name: 'Mvaluesummer Island Adventure'},
-	{value: '2006001', name: 'Thunder Sojourn'},
-	{value: '2007001', name: 'Moonlight Merriment'},
-	{value: '2008001', name: 'Labyrinth Warriors'},
-	{value: '2009001', name: 'Shadows Amvaluest Snowstorms'},
-	{value: '2010001', name: 'Fleeting Colors in Flight'},
-	{value: '2011001', name: 'Three Realms Gateway Offering'},
-	{value: '2012001', name: 'Hues of the Violet Garden'},
-	{value: '2013001', name: 'Perilous Trail'},
-	{value: '2014001', name: 'Summertime Odyssey'},
-	{value: '2015001', name: 'Graven Innocence'},
-	{value: '2016001', name: 'Of Ballads and Brews'},
-	{value: '2017001', name: 'Fabulous Fungus Frenzy'},
-	{value: '2018001', name: 'Akitsu Kimodameshi'},
-	{value: '2019001', name: 'The Exquisite Night Chimes'},
-	{value: '3001001', name: 'The Chalk Prince and the Dragon'},
-	{value: '5001001', name: 'Elemental Crucible'},
-	{value: '5003001', name: 'Marvelous Merchandise'},
-	{value: '5004001', name: 'Astrolabos Chapter'},
-	{value: '5005001', name: 'Elemental Crucible'},
-	{value: '5006001', name: "While It's Warm"},
-	{value: '5007001', name: 'Glvalueing Challenge'},
-	{value: '5008001', name: 'Pristina Nola Chapter'},
-	{value: '5009001', name: 'Historia Antiqua Chapter'},
-	{value: '5010001', name: 'Monoceros Caeli Chapter'},
-	{value: '5011001', name: 'Lost Riches'},
-	{value: '5012001', name: 'Marvelous Merchandise'},
-	{value: '5014001', name: 'Hypostatic Symphony'},
-	{value: '5015001', name: 'Inversion of Genesis'},
-	{value: '5016001', name: 'Five Flushes of Fortune'},
-	{value: '5017001', name: 'Vishaps and Where to Find Them'},
-	{value: '5018001', name: 'Papilio Charontis Chapter'},
-	{value: '5019001', name: 'Contending Tvaluees'},
-	{value: '5020001', name: 'Wishful Drops'},
-	{value: '5021001', name: 'Hangout Event'},
-	{value: '5022001', name: 'Battlefront: Misty Dungeon'},
-	{value: '5023001', name: 'Windtrace'},
-	{value: '5024001', name: 'Mimi Tomo'},
-	{value: '5025001', name: 'Historia Antiqua Chapter'},
-	{value: '5026001', name: 'Chilled to the Bone'},
-	{value: '5027001', name: 'A Teapot to Call Home'},
-	{value: '5028001', name: 'Hangout Event'},
-	{value: '5029001', name: 'Aphros Delos Chapter'},
-	{value: '5030001', name: 'Never-Ending Battle'},
-	{value: '5031001', name: 'Legend of the Vagabond Sword'},
-	{value: '5032001', name: 'Kaboomball Kombat'},
-	{value: '5033001', name: 'Echoing Tales'},
-	{value: '5034001', name: 'Phantom Flow'},
-	{value: '5035001', name: 'Lost Riches'},
-	{value: '5036001', name: 'Bellowing Blaze'},
-	{value: '5037001', name: 'Theater Mechanicus: Stage of Wonders'},
-	{value: '5038001', name: 'Carassius Auratus Chapter'},
-	{value: '5039001', name: 'Grus Nivis Chapter'},
-	{value: '5040001', name: 'Hyakunin Ikki'},
-	{value: '5041001', name: 'Lunar Realm'},
-	{value: '5042001', name: 'Mendacious Waves'},
-	{value: '5043001', name: 'Distant Storm'},
-	{value: '5044001', name: 'Spectral Secrets'},
-	{value: '5045001', name: 'Dracaena Somnolenta Chapter'},
-	{value: '5046001', name: 'Imperatrix Umbrosa Chapter'},
-	{value: '5047001', name: 'Dreams of Bloom'},
-	{value: '5048001', name: 'Hangout Event'},
-	{value: '5049001', name: 'Shadow of the Ancients'},
-	{value: '5050001', name: "Tuned to the World's Sounds"},
-	{
-		value: '5051001',
-		name: 'Bantan Sango Case Files: The Warrior Dog',
-	},
-	{value: '5052001', name: 'Exploding Population'},
-	{value: '5053001', name: 'Energy Amplifier'},
-	{value: '5054001', name: 'Misty Dungeon: Realm of Light'},
-	{value: '5055001', name: 'Eight Locales Over Mountains and Seas'},
-	{value: '5056001', name: 'Hangout Event'},
-	{value: '5057001', name: 'Hangout Event'},
-	{value: '5058001', name: 'A Study in Potions'},
-	{value: '5059001', name: 'Taurus Iracundus Chapter'},
-	{value: '5060001', name: 'Beastly Rift'},
-	{value: '5061001', name: 'With Sleet and Storm'},
-	{value: '5062001', name: 'Of Drink A-Dreaming'},
-	{value: '5063001', name: 'The Crane Returns on the Wind'},
-	{value: '5064001', name: 'Enkanomiya'},
-	{value: '5065001', name: 'Divine Ingenuity'},
-	{value: '5066001', name: 'Spices From the West'},
-	{value: '5067001', name: 'Vibro-Crystal Research'},
-	{
-		value: '5068001',
-		name: 'Outsvaluee the Canvas, Insvaluee the Lens',
-	},
-	{value: '5069001', name: 'Divina Vulpes Chapter'},
-	{value: '5070001', name: 'Imperatrix Umbrosa Chapter'},
-	{value: '5071001', name: 'Chasmic Serpent'},
-	{
-		value: '5072001',
-		name: 'The Almighty Arataki Great and Glorious Drumalong Festival',
-	},
-	{value: '5073001', name: 'Hangout Event'},
-	{value: '5074001', name: 'Hangout Event'},
-	{value: '5075001', name: 'The Chasm'},
-	{value: '5076001', name: 'Hyakunin Ikki'},
-	{value: '5077001', name: 'Requiem of the Echoing Depths'},
-	{value: '5078001', name: 'Cypressus Custos Chapter'},
-	{value: '5079001', name: 'A Muddy Bizarre Adventure'},
-	{value: '5080001', name: 'Core of the Apparatus'},
-	{value: '5081001', name: 'Umbrabilis Orchis Chapter'},
-	{value: '5082001', name: 'Evermotion Mechanical Painting'},
-	{value: '5083001', name: 'Reminiscent Regimen'},
-	{value: '5084001', name: 'Resonating Visions'},
-	{value: '5085001', name: 'Hvalueden Strife'},
-	{value: '5086001', name: 'Murkwood Fungal Raptor'},
-	{value: '5087001', name: 'Tablet Analytics'},
-	{value: '5088001', name: 'Acer Palmatum Chapter'},
-	{value: '5089001', name: 'Rumbleflower'},
-	{value: '5090001', name: 'Fayz Trials'},
-	{value: '5091001', name: 'Lost Riches'},
-	{value: '5092001', name: 'Vulpes Zerda Chapter'},
-	{value: '5093001', name: 'Dharma Forest'},
-	{value: '5094001', name: 'Hyakunin Ikki'},
-	{value: '5095001', name: 'Wind Chaser'},
-	{value: '5096001', name: "Star-Seeker's Sojourn"},
-	{value: '5100001', name: 'Lupus Aureus Chapter'},
-	{value: '5101001', name: 'Lotos Somno Chapter'},
-	{value: '5102001', name: 'Searing Dreams in the Sea of Sand'},
-	{value: '5103001', name: 'Perpetual Motion Dragon'},
-	{value: '5104001', name: 'Matrix of Overseer Network'},
-	{value: '5105001', name: 'Dreams, Emptiness, Deception'},
-	{value: '5106001', name: 'The Verdant Takeover'},
-	{value: '5107001', name: 'Hypostatic Symphony: Dissonant Verse'},
-	{
-		value: '5108001',
-		name: 'Outsvaluee the Canvas, Insvaluee the Lens: Greenery Chapter',
-	},
-	{value: '5109001', name: 'Akasha Pulses, the Kalpa Flame Rises'},
-	{value: '5110001', name: 'Battlefield of Dice, Cats, and Cards'},
-	{value: '5111001', name: 'Windtrace'},
-	{value: '5112001', name: 'Across the Wilderness'},
-	{value: '5113001', name: 'Sapientia Oromasdis Chapter'},
-	{value: '5114001', name: 'Misty Dungeon: Realm of Sand'},
-	{value: '6002001', name: 'Even Mountains Tremble'},
-	{value: '6003001', name: 'Outland Gastronomy'},
-	{value: '6005001', name: 'Autumn Winds, Scarlet Leaves'},
-	{value: '6006001', name: 'Machine Battlefront'},
-	{value: '5002005', name: 'Test Run Albedo'},
-	{value: '5002006', name: 'Test Run Ganyu'},
-	{value: '5002007', name: 'Test Run Xiao'},
-	{value: '5002008', name: 'Test Run Keqing'},
-	{value: '5002010', name: 'Test Run Venti'},
-	{value: '5002012', name: 'Test Run Zhongli'},
-	{value: '5002013', name: 'Test Run Eula'},
-	{value: '5002014', name: 'Test Run Klee'},
-	{value: '5002015', name: 'Test Run Kazuha'},
-	{value: '5002018', name: 'Test Run Shogun'},
-	{value: '5002019', name: 'Test Run Kokomi'},
-	{value: '5002020', name: 'Test Run Childe'},
-	{value: '5002021', name: 'Test Run Hutao'},
-	{value: '5002026', name: 'Test Run Yae'},
-	{value: '5002029', name: 'Test Run Ayaka'},
-	{value: '5002031', name: 'Test Run Itto'},
-	{value: '5002033', name: 'Test Run Yoimiya'},
-];
-const weaponValue = eventChoices.map((e) => {
-	res.map((r) => {
-		if (!e.name.includes(r.name)) {
-			console.log(r);
-		}
-		return 1;
-	});
-	return 1;
-});
+console.log(cmdMap)
