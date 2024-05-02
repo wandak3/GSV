@@ -27,8 +27,9 @@ model t_activity_data {
   @@unique([activity_id, schedule_id], map: "activity_schedule_id")
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model t_activity_schedule_config {
-  schedule_id Int      @id @default(autoincrement()) @db.UnsignedInt
+  schedule_id Int @id   @default(autoincrement()) @db.UnsignedInt
   begin_time  DateTime? @db.DateTime(0)
   end_time    DateTime? @db.DateTime(0)
   desc        String?   @db.VarChar(255)

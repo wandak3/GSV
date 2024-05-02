@@ -4,7 +4,6 @@ import os
 # the file to be converted to 
 # json format
 directory = os.getcwd()
-print(directory)
 filename = '{}/tool/handbook.txt'.format(directory)
  
 # dictionary where the lines from
