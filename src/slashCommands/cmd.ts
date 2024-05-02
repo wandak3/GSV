@@ -14,16 +14,16 @@ const command: SlashCommand = {
             subcommand
                 .setName('admin')
                 .setDescription('Gửi lệnh admin cho người chơi.')
-                .addStringOption((option) => option.setName('uid').setDescription('Cú pháp').setRequired(true))
+                .addStringOption((option) => option.setName('uid').setDescription('UID').setRequired(true))
                 .addStringOption((option) =>
-                    option.setName('msg').setDescription('Cú pháp').setRequired(true).setAutocomplete(true).setRequired(true)
+                    option.setName('msg').setDescription('Cú pháp').setRequired(true).setRequired(true)
                 )
         )
         .addSubcommand((subcommand) =>
             subcommand
                 .setName('info')
                 .setDescription('Lấy thông tin cơ bản của người chơi.')
-                .addStringOption((option) => option.setName('uid').setDescription('Cú pháp').setRequired(true))
+                .addStringOption((option) => option.setName('uid').setDescription('UID').setRequired(true))
         ),
     cooldown: 1,
     execute: async (interaction: CommandInteraction) => {
@@ -34,10 +34,12 @@ const command: SlashCommand = {
             const uid = interaction.options.getString('uid', true);
             const msg = interaction.options.getString('msg', true);
             try {
+                const msg_modified = msg.replace(/ /g, '%20');
                 await fetch(
-                    `http://${ip}:14861/api?region=dev_gio&ticket=GM&cmd=1116&uid=${uid}&msg=${msg}`
+                    `http://${ip}:14861/api?region=dev_gio&ticket=GM&cmd=1116&uid=${uid}&msg=${msg_modified}`
                 );
-                await interaction.reply({
+                await interaction.deferReply({ ephemeral: true });
+                await interaction.followUp({
                     content: `Đã thực hiện thành công lệnh: ${msg} cho người chơi có UID: ${uid}`,
                     ephemeral: true,
                 });
@@ -68,13 +70,13 @@ const command: SlashCommand = {
                         { name: 'Mora', value: `${result['data']['data']['basic_brief']['scoin'].toLocaleString()}`, inline: true },
                         { name: 'Primogems', value: `${result['data']['data']['basic_brief']['hcoin'].toLocaleString()}`, inline: true },
                     );
-
-                await interaction.reply({
+                await interaction.deferReply({ ephemeral: true });
+                await interaction.followUp({
                     embeds: [embed],
                     ephemeral: true,
                 });
             } catch (error) {
-                await interaction.reply({
+                await interaction.followUp({
                     content: `Đã có lỗi xảy ra: ${error.message}`,
                     ephemeral: true,
                 });
