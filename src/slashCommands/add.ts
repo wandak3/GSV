@@ -85,10 +85,12 @@ const command: SlashCommand = {
 			});
 			await interaction.reply({
 				content: 'Sự kiện đã được thêm vào Server!',
+				ephemeral: true,
 			});
 		} catch (error) {
 			await interaction.reply({
 				content: `Có lỗi xảy ra! Chi tiết: ${error.message}`,
+				ephemeral: true,
 			});
 		}
 	},
