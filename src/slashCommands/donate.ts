@@ -50,7 +50,6 @@ const command: SlashCommand = {
                 `http://${ip}:14861/api?sender=${sender}&title=${title[titleId]}&content=${description}&item_list=${item[type]}&expire_time=${seconds}&is_collectible=False&uid=${uid}&cmd=1005&region=dev_gio&ticket=GM%40${seconds}&sign=${uuid}`
             );
             const json = await res.json();
-            console.log(`http://${ip}:14861/api?sender=${sender}&title=${title}&content=${description}&item_list=${item[type]}&expire_time=${seconds}&is_collectible=False&uid=${uid}&cmd=1005&region=dev_gio&ticket=GM%40${seconds}&sign=${uuid}`)
             if (json.msg !== 'succ') {
                 await interaction.reply({content: 'Gửi thư không thành công. Lỗi: `' + json.msg + '`', ephemeral: true});
                 return;
