@@ -41,7 +41,7 @@ const command: SlashCommand = {
             (item) => item.value == id
           ) ?? { name: 'Không tìm thấy', value: 'Không tìm thấy' };
           const modifiedFound = {
-            name: find.name,
+            name: data.schedule_id.toString() + ' ' + find.name,
             value: data.schedule_id.toString(),
           };
           items.push(modifiedFound);

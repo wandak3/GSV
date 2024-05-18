@@ -113,7 +113,7 @@ const command: SlashCommand = {
         });
       });
       await interaction.reply({
-        content: 'Sự kiện đã được thêm vào Server!',
+        content: `Sự kiện ${event} đã được thêm vào SQL! Thời gian bắt đầu: ${begin}, thời gian kết thúc: ${end}`,
         ephemeral: true,
       });
     } catch (error) {
