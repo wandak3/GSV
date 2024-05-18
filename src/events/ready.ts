@@ -46,7 +46,7 @@ const event: BotEvent = {
           });
         } else {
           client.user?.setActivity(
-            ` với ${onlinePlayer} người. Ping ${ping}ms`,
+            ` với ${onlinePlayer} người. Ping ${Math.ceil(ping / 2)}ms`,
             {
               type: ActivityType.Playing,
             }
