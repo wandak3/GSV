@@ -9,6 +9,7 @@ import {
 import { SlashCommand } from '../types';
 import { deleteGachaScheduleConfig, getGachaScheduleConfig } from '../function';
 import { item } from '../data/item';
+import moment from 'moment';
 
 var items: { name: string; value: string }[] = [];
 const command: SlashCommand = {
@@ -41,7 +42,12 @@ const command: SlashCommand = {
             (item) => item.value == id
           ) ?? { name: 'Không tìm thấy', value: 'Không tìm thấy' };
           const modifiedFound = {
-            name: data.schedule_id.toString() + ' ' + find.name,
+            name:
+              data.schedule_id.toString() +
+              '. ' +
+              find.name +
+              ' - ' +
+              moment(data.end_time).format('DD/MM/YY'),
             value: data.schedule_id.toString(),
           };
           items.push(modifiedFound);
