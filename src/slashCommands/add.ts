@@ -32,6 +32,9 @@ const command: SlashCommand = {
     )
     .addStringOption((option) =>
       option.setName('end').setDescription('Thời gian kết thúc')
+    )
+    .addNumberOption((option) =>
+      option.setName('duration').setDescription('Thời gian kéo dài')
     ),
   cooldown: 1,
   autocomplete: async (interaction) => {
@@ -74,9 +77,11 @@ const command: SlashCommand = {
           .startOf('day')
           .toISOString()
       : moment().startOf('day').toISOString();
+    const duration = interaction.options.getNumber('duration') ?? 2;
     const end = interaction.options.getString('end')
       ? moment(interaction.options.getString('end')).toISOString()
-      : moment(begin).add(2, 'w').toISOString();
+      : moment(begin).add(duration, 'w').toISOString();
+
     try {
       const getFileData = fs.readFileSync(
         path.join('./src/data/references', event)
