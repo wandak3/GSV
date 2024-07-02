@@ -1,7 +1,5 @@
-This work is still under update continously by myself. I am not a professional developer and only work on this project as a study oppurtunity so the code would still be a mess. Please pardon me and ask me any questions if you have.
----
-
 # GIO Control Discord Bot.
+This work is still under update continously by myself. I am not a professional developer and only work on this project as a study oppurtunity so the code would still be a mess. Please pardon me and ask me any questions if you have.
 
 The bot is designed to send GM command such as: giving item, sending mails to players, monitor the simple status of the server...
 
