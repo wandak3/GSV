@@ -71,25 +71,3 @@ The bot should now be online on your Discord server.
   ```
 
 Add more commands and descriptions as needed.
-
-## Contributing
-
-Contributions are welcome! If you'd like to contribute:
-- Fork the repository.
-- Create a new branch (`git checkout -b feature/your-feature`).
-- Commit your changes (`git commit -am 'Add new feature'`).
-- Push to the branch (`git push origin feature/your-feature`).
-- Create a new Pull Request.
-
-## License
-
-This project is licensed under the [License Name] License - see the `LICENSE` file for details.
-
-## Acknowledgments
-
-- [Name] for inspiration or code snippets.
-- Discord.js community for their helpful resources.
-
----
-
-Feel free to customize sections like "Commands", "Contributing", and "Acknowledgments" based on your project specifics. This template provides a structured starting point for documenting your Discord bot project using Node.js.
