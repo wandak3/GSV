@@ -9,9 +9,12 @@ datasource db {
 }
 
 model userData {
-	uid    String @default("")
-	credit Int    @default(0)
-	points Int    @default(0)
+	user       String
+	uid        String
+	mora       Int
+	credit     Int    @default(0)
+	points     Int    @default(0)
+	lastUpdate Int    @default(0)
 
-	@@id([uid])
+	@@id([user])
 }

@@ -4,8 +4,10 @@ import {
 	CommandInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Events,
 } from 'discord.js';
 import {SlashCommand} from '../types';
-import checkDatabase, {generateOTP} from '../function';
+import {checkDatabase, generateOTP} from '../function';
+import moment from 'moment';
 import client from '../index';
+import prismaSqlite from '../prisma/prisma-sqlite';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()
@@ -25,8 +27,9 @@ const command: SlashCommand = {
 			return interaction.reply('Không thể thực hiện ở DM');
 		const res = await checkDatabase(interaction.user.id);
 		if (res) return interaction.reply('You have already registered');
-		// const ip = process.env.IP;
 		const uid: string = interaction.options.getString('uid', true);
+		const ip: string | undefined = process.env.IP;
+		// Create Modal
 		const modal: ModalBuilder = new ModalBuilder()
 			.setCustomId('registerForm')
 			.setTitle('Register your Account');
@@ -35,7 +38,6 @@ const command: SlashCommand = {
 			.setLabel('Verify OTP')
 			.setPlaceholder('Input your OTP')
 			.setStyle(TextInputStyle.Short);
-
 		const firstActionRow = new ActionRowBuilder().addComponents(regOTP);
 
 		// Add inputs to the modal
@@ -56,6 +58,17 @@ const command: SlashCommand = {
 					await interaction.reply('Registered Failed. Reason: Wrong OTP.');
 					return;
 				} else {
+					const briefData = await fetch(`http://${ip}:14861/api?cmd=5003&region=dev_gio&ticket=GM&uid=${uid}`).then(res => res.json());
+					const mora = briefData.data.scoin;
+					const lastUpdate: number = moment().unix();
+					await prismaSqlite.userData.create({
+						data: {
+							user: interaction.user.id,
+							uid: uid,
+							mora: mora,
+							lastUpdate: lastUpdate,
+						},
+					});
 					await interaction.reply('Successfully registered');
 					return;
 				}

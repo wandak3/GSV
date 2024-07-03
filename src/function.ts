@@ -282,13 +282,40 @@ export async function generateOTP(uid: string): Promise<string> {
 	return OTP;
 }
 
-export default async function checkDatabase(uid: string) {
+export async function checkDatabase(user: string) {
 	await prisma_sqlite.$connect();
 	return prisma_sqlite.userData.findUnique({
 		where: {
-			uid: uid,
+			user: user,
 		},
 	});
+}
+
+export async function sqliteUpdate(user: string) {
+	const userData = await prisma_sqlite.userData.findFirst({
+		where: {
+			user: user,
+		},
+	});
+	if (!userData) return undefined;
+	const ip: string | undefined = process.env.IP;
+	const timeNow: number = moment().unix();
+	const lastUpdate: number = userData.lastUpdate;
+	const timeDiff: number = timeNow - lastUpdate;
+	if (timeDiff > 60) {
+		const briefData = await fetch(`http://${ip}:14861/api?cmd=5003&region=dev_gio&ticket=GM&uid=${userData.uid}`).then(res => res.json());
+		const moraUpdate = briefData.data.scoin;
+		await prisma_sqlite.userData.update({
+			where: {
+				user: user,
+			},
+			data: {
+				mora: moraUpdate,
+				lastUpdate: timeNow,
+			},
+		});
+	}
+	return userData;
 }
 
 export async function getPlayerOnline() {
