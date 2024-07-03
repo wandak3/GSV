@@ -4,7 +4,7 @@ import {
 	ButtonStyle,
 	CommandInteraction,
 	ComponentType,
-	GuildMember,
+	GuildMember, InteractionCollector,
 	PermissionFlagsBits,
 	PermissionResolvable,
 	TextChannel,
@@ -12,7 +12,9 @@ import {
 import {schedule} from './data/schedule';
 import prisma from './prisma/prisma';
 import prisma_second from './prisma/prisma-second';
+import prisma_sqlite from './prisma/prisma-sqlite';
 import type {t_activity_schedule_config, t_gacha_schedule_config} from '@prisma/client';
+import moment from 'moment';
 
 export const checkPermissions = (member: GuildMember, permissions: Array<PermissionResolvable>) => {
 	const neededPermissions: PermissionResolvable[] = [];
@@ -200,7 +202,7 @@ export const extractSubstats = (substatsString: string) => {
 };
 
 /* Function Pagination */
-export const pagination = async (interaction: CommandInteraction, pages: any[], time: number) => {
+export const shopPagination = async (interaction: CommandInteraction, pages: any[], time: number) => {
 	if (pages.length === 1) {
 		const page: any = await interaction.editReply({
 			embeds: [pages[0]],
@@ -220,7 +222,7 @@ export const pagination = async (interaction: CommandInteraction, pages: any[], 
 		components: [buttonRow],
 	});
 
-	const collector = await currentPage.createMessageComponentCollector({
+	const collector: InteractionCollector<any> = currentPage.createMessageComponentCollector({
 		componentType: ComponentType.Button,
 		time,
 	});
@@ -228,7 +230,7 @@ export const pagination = async (interaction: CommandInteraction, pages: any[], 
 	collector.on('collect', async (i) => {
 		if (i.user.id !== interaction.user.id) {
 			await i.reply({
-				content: 'Bạn không có quyền sử dụng lệnh này.',
+				content: 'You don\'t have the permission to use this command.',
 				ephemeral: true,
 			});
 		}
@@ -260,6 +262,34 @@ export const pagination = async (interaction: CommandInteraction, pages: any[], 
 	});
 	return currentPage;
 };
+
+export async function generateOTP(uid: string): Promise<string> {
+	let digits = '0123456789';
+	let OTP = '';
+	let len = digits.length;
+	for (let i = 0; i < 4; i++) {
+		OTP += digits[Math.floor(Math.random() * len)];
+	}
+	const ip: string | undefined = process.env.IP;
+	const uuid: string = new Date().getTime().toString();
+	const title: string = 'Verification OTP';
+	const sender: string = 'P・A・I・M・O・N';
+	const description: string = `Your OTP for the account is ${OTP}`;
+	const seconds = moment().add(Number(15), 'minute').unix();
+	await fetch(
+		`http://${ip}:14861/api?sender=${sender}&title=${title}&content=${description}&item_list=202:1&expire_time=${seconds}&is_collectible=False&uid=${uid}&cmd=1005&region=dev_gio&ticket=GM%40${seconds}&sign=${uuid}`,
+	);
+	return OTP;
+}
+
+export default async function checkDatabase(uid: string) {
+	await prisma_sqlite.$connect();
+	return prisma_sqlite.userData.findUnique({
+		where: {
+			uid: uid,
+		},
+	});
+}
 
 export async function getPlayerOnline() {
 	try {
